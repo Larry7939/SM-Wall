@@ -3,3 +3,5 @@
 
 2022 - 07 - 01
  - Repository 생성
+2022 - 07 - 04
+ - main, register layout 추가
