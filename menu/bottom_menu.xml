@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/first_tab"
+        app:showAsAction="always"
+        android:enabled="true"
+        android:icon="@android:drawable/ic_menu_camera"
+        android:title="AR"/>
+    <item
+        android:id="@+id/second_tab"
+        app:showAsAction="always"
+        android:enabled="true"
+        android:icon="@android:drawable/ic_menu_search"
+        android:title="Search"/>
+
+    <item
+        android:id="@+id/third_tab"
+        app:showAsAction="always"
+        android:enabled="true"
+        android:icon="@android:drawable/ic_menu_gallery"
+        android:title="Write">
+    </item>
+
+    <item
+        android:id="@+id/fourth_tab"
+        app:showAsAction="always"
+        android:enabled="true"
+        android:icon="@drawable/ic_baseline_person_24"
+        android:title="Setting">
+    </item>
+</menu>
