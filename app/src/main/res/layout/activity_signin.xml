@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/sumung">
+    android:background="@drawable/sumung"
+    tools:context=".src.login.idsignin.IdSignin">
 
     <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/edit_id"
@@ -32,29 +33,28 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/edit_id" />
 
-    <androidx.appcompat.widget.AppCompatEditText
-        android:id="@+id/edit_pw_re"
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_login"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:ems="10"
-        android:hint="비밀번호 확인"
-        android:inputType="textPassword"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.502"
+        android:layout_marginStart="100dp"
+        android:layout_marginLeft="100dp"
+        android:layout_marginTop="24dp"
+        android:text="로그인"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/edit_pw" />
 
     <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/btn_register2"
+        android:id="@+id/btn_register"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:layout_marginEnd="160dp"
-        android:layout_marginRight="160dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="100dp"
+        android:layout_marginRight="100dp"
         android:text="회원가입"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edit_pw_re" />
+        app:layout_constraintTop_toBottomOf="@+id/edit_pw" />
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/imageView"

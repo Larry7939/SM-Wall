@@ -27,10 +27,10 @@ class LoadingDialog(context: Context, loadingType:Int) : Dialog(context) {
         window!!.setBackgroundDrawable(ColorDrawable())
         window!!.setDimAmount(0.2f)
         if(loadingtype==0){
-            binding.loadingTv.text = R.string.loading_login.toString() //로그인 중입니다.
+            binding.loadingTv.text = "로그인 중입니다." //로그인 중입니다.
         }
         else if(loadingtype==1){
-            binding.loadingTv.text = R.string.loading_signup.toString() // 회원가입 중입니다.
+            binding.loadingTv.text = "회원가입 중입니다.".toString() // 회원가입 중입니다.
         }
     }
     override fun show() {
