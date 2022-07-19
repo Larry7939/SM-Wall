@@ -24,3 +24,11 @@
   - util - Adapter나 LoadingDialog와 같은 유틸 파일
  - 로딩창 구현(LoadingDialog/dialog_loading.xml/loading_anim_rotate)
 
+2022 - 07 - 19
+ - Login,Register Activity -> IdSignin/IdSignup 이름 변경
+ - 회원가입 API연동 및 기능 구현 완료
+  - idsignup models 구성 - request/response 데이터 클래스(각각 서버에 요청을 보내고 응답을 받기 위한 데이터 클래스)
+  - IdSignupRetrofitInterface구성(데이터 전송 방식)
+  - IdSignupView구성(Success or Failure 함수 인터페이스)
+  - IdSignupService구성
+  - 회원가입 시 ID 중복여부나 비밀번호 일치여부 확인 기능 구현해야함. -> 아이디 중복 등의 API를 따로 만들기보다는, 서버에서 보내주는 오류코드로 구분
