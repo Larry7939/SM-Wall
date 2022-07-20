@@ -6,77 +6,108 @@
     android:layout_height="match_parent"
     android:background="@drawable/sumung">
 
+
+
     <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/edit_id"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="312dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="325dp"
         android:ems="10"
         android:hint="아이디"
+        android:textColorHint="@color/hintText"
+        android:textCursorDrawable="@drawable/custom_sign_tv"
         android:inputType="textPersonName"
+        android:background="#40000000"
+        android:paddingStart="10dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.502"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
     <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/edit_nickname"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:layout_marginTop="262dp"
         android:ems="10"
         android:hint="별명"
+        android:textColorHint="@color/hintText"
+        android:textCursorDrawable="@drawable/custom_sign_tv"
         android:inputType="textPersonName"
+        android:background="#40000000"
+        android:paddingStart="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
     <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/edit_pw"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:layout_marginTop="16dp"
         android:ems="10"
         android:hint="비밀번호"
         android:inputType="textPassword"
+        android:textColorHint="@color/hintText"
+        android:textCursorDrawable="@drawable/custom_sign_tv"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.502"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edit_id" />
+        app:layout_constraintTop_toBottomOf="@+id/edit_id"
+        android:background="#40000000"
+        android:paddingStart="10dp"
+        />
 
     <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/edit_pw_re"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="16dp"
         android:ems="10"
         android:hint="비밀번호 확인"
         android:inputType="textPassword"
+        android:textColorHint="@color/hintText"
+        android:textCursorDrawable="@drawable/custom_sign_tv"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.502"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edit_pw" />
+        app:layout_constraintTop_toBottomOf="@+id/edit_pw"
+        android:background="#40000000"
+        android:paddingStart="10dp" />
 
     <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/edit_phone_number"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="80dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="16dp"
         android:ems="10"
         android:hint="전화번호"
         android:inputType="text"
+        android:textColorHint="@color/hintText"
+        android:textCursorDrawable="@drawable/custom_sign_tv"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.502"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edit_pw" />
-
+        app:layout_constraintTop_toBottomOf="@+id/edit_pw_re"
+        android:background="#40000000"
+        android:paddingStart="10dp"
+        />
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_register2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="90dp"
-        android:layout_marginEnd="160dp"
+        android:layout_marginStart="70dp"
         android:text="회원가입"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/btn_cancel"
+        app:layout_constraintTop_toBottomOf="@+id/edit_pw_re" />
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="90dp"
+        android:layout_marginEnd="70dp"
+        android:text="취소"
+        app:layout_constraintStart_toEndOf="@id/btn_register2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/edit_pw_re" />
+
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/imageView"
@@ -87,5 +118,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/smulogo" />
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/btn_back"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_margin="20dp"
+        app:srcCompat="@drawable/register_back">
+    </androidx.appcompat.widget.AppCompatImageView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

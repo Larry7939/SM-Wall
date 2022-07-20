@@ -18,6 +18,11 @@ class IdSignup : BaseActivity<ActivityIdSignupBinding>(ActivityIdSignupBinding::
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //회원가입 성공 시 로그인 창으로 이동!! 여기에 api post랑 조건 추가해야함
+        binding.btnBack.setOnClickListener {
+            startActivity(Intent(this,IdSignin::class.java))
+            overridePendingTransition(0,0)
+            finish()
+        }
         binding.btnRegister2.setOnClickListener {
             idInput = binding.editId.text.toString()
             pwInput = binding.editPw.text.toString()

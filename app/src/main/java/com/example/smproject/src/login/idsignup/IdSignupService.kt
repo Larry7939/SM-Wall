@@ -2,8 +2,7 @@ package com.example.smproject.src.login.idsignup
 
 import android.util.Log
 import com.example.smproject.config.ApplicationClass
-import com.example.smproject.src.login.idsignup.models.IdSignupRequest
-import com.example.smproject.src.login.idsignup.models.IdSignupResponse
+import com.example.smproject.src.login.idsignup.models.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
