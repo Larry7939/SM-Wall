@@ -118,14 +118,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/smulogo" />
-    <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/btn_back"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_margin="20dp"
-        app:srcCompat="@drawable/register_back">
-    </androidx.appcompat.widget.AppCompatImageView>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

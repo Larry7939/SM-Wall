@@ -7,5 +7,7 @@
     <!--loading_dialog-->
     <string name="loading_login">로그인 중입니다.</string>
     <string name="loading_signup">회원가입 중입니다.</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

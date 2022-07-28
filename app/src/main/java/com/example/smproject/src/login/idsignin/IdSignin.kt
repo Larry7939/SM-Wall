@@ -1,14 +1,13 @@
 package com.example.smproject.src.login.idsignin
 
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import com.example.smproject.config.ApplicationClass
 import com.example.smproject.config.BaseActivity
 import com.example.smproject.databinding.ActivitySigninBinding
 import com.example.smproject.src.login.idsignin.models.*
-import com.example.smproject.src.main.home.HomeActivity
+import com.example.smproject.src.main.MainActivity
 import com.example.smproject.src.login.idsignup.IdSignup
 
 
@@ -41,7 +40,7 @@ class IdSignin : BaseActivity<ActivitySigninBinding>(ActivitySigninBinding::infl
             showCustomToast("로그인 성공")
             editor.putString(ApplicationClass.X_ACCESS_TOKEN,response.data.accessToken)
             editor.commit()
-            startActivity(Intent(this, HomeActivity::class.java))
+            startActivity(Intent(this, MainActivity::class.java))
             overridePendingTransition(0, 0)
             finish()
         }

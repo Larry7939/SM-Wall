@@ -8,7 +8,7 @@ import com.example.smproject.config.ApplicationClass
 import com.example.smproject.config.BaseActivity
 import com.example.smproject.databinding.ActivitySplashBinding
 import com.example.smproject.src.login.idsignin.IdSignin
-import com.example.smproject.src.main.home.HomeActivity
+import com.example.smproject.src.main.MainActivity
 
 class SplashActivity : BaseActivity<ActivitySplashBinding>(ActivitySplashBinding::inflate) {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,7 +19,7 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>(ActivitySplashBinding
         if(ApplicationClass.sSharedPreferences.getString(ApplicationClass.X_ACCESS_TOKEN,"")!=""){
             Handler(Looper.getMainLooper()).postDelayed({
                 showCustomToast("자동로그인 되었습니다.")
-                startActivity(Intent(this, HomeActivity::class.java))
+                startActivity(Intent(this, MainActivity::class.java))
                 overridePendingTransition(0,0)
                 finish()
             },3500)
