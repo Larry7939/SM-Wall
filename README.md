@@ -32,3 +32,13 @@
   - IdSignupView구성(Success or Failure 함수 인터페이스)
   - IdSignupService구성
   - 회원가입 시 ID 중복여부나 비밀번호 일치여부 확인 기능 구현해야함. -> 아이디 중복 등의 API를 따로 만들기보다는, 서버에서 보내주는 오류코드로 구분
+
+2022 - 07 - 20
+ - 로그인API 연동 및 토큰을 이용한 자동 로그인/로그아웃 기능 구현
+ - Splash화면 임시작성(디자인 필요)
+ - 로그인 및 회원가입 UI개선
+ 
+2022 - 07 - 28
+ - MainActivity위에 ar/search/post/info Fragment 생성 및 BottomNavigationView구현
+ - info Fragment로 로그아웃 기능 이동
+ - info Fragment Layout 작성

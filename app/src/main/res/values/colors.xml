@@ -13,6 +13,7 @@
     <color name="blackForText">#4a4a4a</color>
     <color name="redForText">#d9534f</color>
     <!-- Custom Color -->
+    <color name="transparent100">#00000000</color>
     <color name="transparent70">#B3000000</color>
     <color name="hintText">#D5D5D5</color>
     <color name="basicBackground">#CCCCCC</color>
