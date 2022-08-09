@@ -9,6 +9,7 @@ import com.example.smproject.config.BaseActivity
 import com.example.smproject.databinding.ActivitySplashBinding
 import com.example.smproject.src.login.idsignin.IdSignin
 import com.example.smproject.src.main.MainActivity
+import com.example.smproject.src.main.info.InfoFragment
 
 class SplashActivity : BaseActivity<ActivitySplashBinding>(ActivitySplashBinding::inflate) {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,5 +32,8 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>(ActivitySplashBinding
                 finish()
             },3500)
         }
+
+
+
     }
 }

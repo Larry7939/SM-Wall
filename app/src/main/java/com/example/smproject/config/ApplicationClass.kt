@@ -35,7 +35,7 @@ class ApplicationClass: Application() {
             .connectTimeout(5000,TimeUnit.MILLISECONDS)
             // 로그캣에 okhttp.OkHttpClient로 검색하면 http 통신 내용을 전시
             .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
-            .addNetworkInterceptor(XAccessTokenInterceptor())
+            .addNetworkInterceptor(XAccessTokenInterceptor()) //Interceptor를 이용하여 모든 네트워크 요청에 Header를 붙여준다!
             .build()
         Log.d("레트로핏 초기화 여부","-초기화됨")
         // sRetrofit 이라는 전역변수에 API url, 인터셉터, Gson을 넣어주고 빌드해주는 코드

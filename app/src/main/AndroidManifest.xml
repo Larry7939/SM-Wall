@@ -3,6 +3,12 @@
     package="com.example.smproject">
 
     <uses-permission android:name="android.permission.INTERNET" />
+<!--    앨범 읽고 쓰기 권한-->
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-feature android:name="android.hardware.camera2"/>
+<!--    scoped storage로 바뀌면서 WRITE_EXTERNAL_STORAGE는 허가받을 필요가 없어졌다.-->
+
 
     <application
         android:name=".config.ApplicationClass"
@@ -22,6 +28,16 @@
         <activity android:name=".src.login.idsignup.IdSignup" />
         <activity android:name=".src.login.idsignin.IdSignin"/>
 
+        <!--    // 갤러리의 이미지를 다루기 위해서 필요-->
+        <provider
+            android:authorities="패키지명"
+            android:name="androidx.core.content.FileProvider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_path"/>
+        </provider>
     </application>
 
 </manifest>
