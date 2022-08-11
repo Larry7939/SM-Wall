@@ -1,10 +1,12 @@
 package com.example.smproject.util
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Bitmap.CompressFormat
 import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.util.Base64
 import android.util.Log
 import java.io.ByteArrayOutputStream
@@ -34,4 +36,15 @@ class BitmapConverter{
 //    val bb = bos.toByteArray()
 //    return(Base64.encodeToString(bb, Base64.DEFAULT))
 //}
+    fun uriToBase64(context:Context,uri: Uri): String {
+    val inputStream = context.contentResolver.openInputStream(uri!!)
+    val img:Bitmap = BitmapFactory.decodeStream(inputStream)
+    inputStream?.close()
+    //이미지 사이즈 및 품질 조정
+    val resized = Bitmap.createScaledBitmap(img,1080,1080,true)
+    val byteArrayOutputStream = ByteArrayOutputStream()
+    resized.compress(Bitmap.CompressFormat.PNG,60,byteArrayOutputStream)
+    val byteArray:ByteArray = byteArrayOutputStream.toByteArray()
+    return Base64.encodeToString(byteArray, Base64.NO_WRAP)
+    }
 }

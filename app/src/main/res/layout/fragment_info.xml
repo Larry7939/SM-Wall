@@ -6,15 +6,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/info_background1"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/background_border">
+    android:layout_height="match_parent">
 
     <androidx.appcompat.widget.AppCompatTextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_margin="15dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="15dp"
         android:text="마이페이지"
         android:textSize="24sp"
         android:textColor="@color/black"
@@ -26,8 +26,8 @@
         android:layout_height="40dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_margin="15dp"
-
+        android:layout_marginEnd="15dp"
+        android:layout_marginTop="15dp"
         app:srcCompat="@drawable/logout">
     </androidx.appcompat.widget.AppCompatImageView>
     <androidx.appcompat.widget.AppCompatImageView

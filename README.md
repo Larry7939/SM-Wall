@@ -42,3 +42,26 @@
  - MainActivity위에 ar/search/post/info Fragment 생성 및 BottomNavigationView구현
  - info Fragment로 로그아웃 기능 이동
  - info Fragment Layout 작성
+
+2022 - 07 - 29
+ - 로그아웃 팝업 다이얼로그 구현
+ 
+2022 - 07 - 30
+ - 갤러리 접근 권한 체크 및
+ - Glide로 갤러리에서 로드한 uri -> binding.profile에 set
+
+2022 - 08 - 07
+ - 사용자 정보 가져오기 API 구현
+ - 헤더를 붙여주기 위해 XAccessTokenInterceptor 수정
+ - BitmapConverter클래스 구현(base64ToBitmap)
+ - 화면 전환 시 Fragment가 재생성되어 서버 통신 딜레이 발생 -> Fragment null체크 및 add/show/hide 함수 활용하여 해결 -> hide/show 시마다 새로운 Fragment instance를 만들지 않도록 주의!
+
+2022 - 08 - 08
+ - InfoFragment에서 갤러리를 실행시키고 돌아오면 Fragment가 화면에 표시되지 않는 이슈 발생 -> MainActivity에서 Fragment를 초기화시키는 initBottomNavigation()을 OnPostResume()에서 실행한 것이 문제였음 -> initBottomNavigation()을 onCreate()옮겨서 해결
+ - InfoFragment 코드 정리(함수화)
+ 
+2022 - 08 - 09
+ - 프로필 사진 수정 API 구현
+ - 이미지를 서버로 보내기 위해 Base64로 인코딩하는 과정에서 두가지 이슈 발생
+ - 크기 이슈 : 갤러리에서 받아온 uri를 bitmap으로 변환한 다음 base64로 변환하는 과정에서 request가 너무 길어져서 통신 실패
+ - 참조 이슈 : 이미지뷰에서 drawable을 얻어서 bitmap으로 바꾼 다음에 base64로 바꾸는 과정에서 이미지뷰를 얻어오지 못하고 null을 반환해서 실패 -> Bitmap.createScaledBitmap()을 이용해서 사이즈를 조정하고 compress를 이용해서 품질을 조정한 뒤, Base64로 encoding해서 해결

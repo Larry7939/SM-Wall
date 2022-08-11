@@ -99,15 +99,9 @@ class InfoFragment : BaseFragment<FragmentInfoBinding>(FragmentInfoBinding::bind
                 Glide.with(context)
                     .load(uri)
                     .into(binding.infoProfile)
-                //Base64인코딩
-                val inputStream = context.contentResolver.openInputStream(uri!!)
-                val img:Bitmap = BitmapFactory.decodeStream(inputStream)
-                inputStream?.close()
-                val resized = Bitmap.createScaledBitmap(img,1080,1080,true)
-                val byteArrayOutputStream = ByteArrayOutputStream()
-                resized.compress(Bitmap.CompressFormat.PNG,60,byteArrayOutputStream)
-                val byteArray:ByteArray = byteArrayOutputStream.toByteArray()
-                profileImageBase64 = Base64.encodeToString(byteArray, NO_WRAP)
+                //Uri -> Bitmap -> Base64인코딩
+                profileImageBase64 = bitmapConverter.uriToBase64(context,uri!!)
+                //tryPost함수 호출
                 changeProfileImg(profileImageBase64)
             }
         }
@@ -166,9 +160,6 @@ class InfoFragment : BaseFragment<FragmentInfoBinding>(FragmentInfoBinding::bind
     //프로필 수정
 
     private fun changeProfileImg(profileBase64:String){
-//        InfoChangeImgService(this).tryPostInfoChangeImg(InfoChangeImgRequest("updateUserImage",
-//            "${BitmapConverter().stringToBitmap(binding.infoProfile.drawable.toBitmap().toString())}")
-//        )}
         InfoChangeImgService(this).tryPostInfoChangeImg(InfoChangeImgRequest("updateUserImage",
             "data:image/png;base64,$profileBase64"))
         }

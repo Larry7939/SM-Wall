@@ -30,7 +30,7 @@
 
         <!--    // 갤러리의 이미지를 다루기 위해서 필요-->
         <provider
-            android:authorities="패키지명"
+            android:authorities="com.example.smproject"
             android:name="androidx.core.content.FileProvider"
             android:exported="false"
             android:grantUriPermissions="true">
@@ -38,6 +38,12 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_path"/>
         </provider>
+
+        <meta-data
+            android:name="com.naver.maps.map.CLIENT_ID"
+            android:value="lvar9elarn" />
+
+
     </application>
 
 </manifest>
