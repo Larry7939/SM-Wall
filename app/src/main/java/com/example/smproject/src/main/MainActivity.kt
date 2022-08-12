@@ -2,6 +2,7 @@ package com.example.smproject.src.main
 
 
 import android.os.Bundle
+import android.view.View
 import androidx.fragment.app.FragmentManager
 import com.example.smproject.R
 import com.example.smproject.config.BaseActivity
@@ -44,11 +45,11 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
                         fragmentManager.beginTransaction().add(binding.mainFrame.id, fragmentAr!!).commit()
                     }
                     if(fragmentAr != null){ //null이 아니면 show
-//                        fragmentManager.beginTransaction().add(binding.mainFrame.id,ArFragment()).commit()
                         fragmentManager.beginTransaction().show(fragmentAr!!).commit()
                     }
                     if(fragmentSearch!=null){
                         fragmentManager.beginTransaction().hide(fragmentSearch!!).commit()
+                        fragmentSearch!!.mapViewSearch.visibility = View.GONE //첫번째 탭을 누르면 search fragment의 지도는 Gone
                     }
                     if(fragmentPost!=null){
                         fragmentManager.beginTransaction().hide(fragmentPost!!).commit()
@@ -65,11 +66,11 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
                         fragmentManager.beginTransaction().add(binding.mainFrame.id,fragmentSearch!!).commit()
                     }
                     if(fragmentSearch != null){ //null이 아니면 show
-//                        fragmentManager.beginTransaction().add(binding.mainFrame.id,SearchFragment()).commit()
                         fragmentManager.beginTransaction().show(fragmentSearch!!).commit()
                     }
                     if(fragmentAr!=null){
                         fragmentManager.beginTransaction().hide(fragmentAr!!).commit()
+                        fragmentAr!!.mapViewAr.visibility = View.GONE //두번째 탭을 누르면 ar fragment의 지도는 Gone
                     }
                     if(fragmentPost!=null){
                         fragmentManager.beginTransaction().hide(fragmentPost!!).commit()
@@ -85,7 +86,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
                         fragmentManager.beginTransaction().add(binding.mainFrame.id,fragmentPost!!).commit()
                     }
                     if(fragmentPost != null){ //null이 아니면 show
-//                        fragmentManager.beginTransaction().add(binding.mainFrame.id,PostFragment()).commit()
                         fragmentManager.beginTransaction().show(fragmentPost!!).commit()
                     }
                     if(fragmentAr!=null){
@@ -105,7 +105,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
                         fragmentManager.beginTransaction().add(binding.mainFrame.id,fragmentInfo!!).commit()
                     }
                     if(fragmentInfo != null){ //null이 아니면 show
-//                        fragmentManager.beginTransaction().add(binding.mainFrame.id,InfoFragment()).commit()
                         fragmentManager.beginTransaction().show(fragmentInfo!!).commit()
                     }
                     if(fragmentAr!=null){
