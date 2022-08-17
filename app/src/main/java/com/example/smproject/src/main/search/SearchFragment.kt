@@ -53,7 +53,6 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(FragmentSearchBinding
     }
     override fun onPause() {
         super.onPause()
-        showCustomToast("search pause")
         mapViewSearch.onPause()
     }
     override fun onDestroyView() {

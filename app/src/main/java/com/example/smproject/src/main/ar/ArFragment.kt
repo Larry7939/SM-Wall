@@ -60,7 +60,6 @@ class ArFragment : BaseFragment<FragmentArBinding>(FragmentArBinding::bind,R.lay
     }
     override fun onPause() {
         super.onPause()
-        showCustomToast("ar pause")
         mapViewAr.onPause()
     }
     override fun onDestroyView() {
