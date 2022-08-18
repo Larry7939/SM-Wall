@@ -65,3 +65,21 @@
  - 이미지를 서버로 보내기 위해 Base64로 인코딩하는 과정에서 두가지 이슈 발생
  - 크기 이슈 : 갤러리에서 받아온 uri를 bitmap으로 변환한 다음 base64로 변환하는 과정에서 request가 너무 길어져서 통신 실패
  - 참조 이슈 : 이미지뷰에서 drawable을 얻어서 bitmap으로 바꾼 다음에 base64로 바꾸는 과정에서 이미지뷰를 얻어오지 못하고 null을 반환해서 실패 -> Bitmap.createScaledBitmap()을 이용해서 사이즈를 조정하고 compress를 이용해서 품질을 조정한 뒤, Base64로 encoding해서 해결
+
+2022 - 08 - 11
+ - uri->bitmap->base64 기능 BimapConverter에 함수화
+ - arFragment layout cam, map버튼 추가
+ - Search Fragment에 네이버 지도 SDK 적용
+
+2022 - 08 - 12
+ - Search Fragment의 fragment를 MapView로 변경
+ - Search Fragment에서 OnMapReadyCallback를 상속 받아서 onMapReady 함수 오버라이드
+ - 건물 표시 및 위도/경도/tilt/zoom 설정
+ - Search Fragment map 상단에 검색창 생성
+ - edit text 커스텀
+
+2022 - 08 - 13
+ - arFragment에 네이버 지도 SDK 적용
+ - Search Fragment에서 Ar Fragment로 넘어가면 Search Fragment의 지도가 곂쳐져 보이는 오류 발생
+ - MainActivity에서 첫번째 tab 선택 시 FragmentManager.begintransition을 이용하여 Search Fragment를 remove하고 null로 만들어서 해결
+ - 대신 search fragment로 이동할 때마다 지도가 새로 그려짐!
