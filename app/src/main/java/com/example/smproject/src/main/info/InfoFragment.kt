@@ -6,14 +6,9 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.content.res.Resources
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
-import android.util.Base64
-import android.util.Base64.NO_WRAP
 import android.util.Log
 import android.view.View
 import androidx.activity.result.ActivityResult
@@ -35,7 +30,6 @@ import com.example.smproject.src.main.info.models.InfoLoadRequest
 import com.example.smproject.src.main.info.models.InfoLoadResponse
 import com.example.smproject.util.BitmapConverter
 import com.example.smproject.util.LogoutDialog
-import java.io.ByteArrayOutputStream
 
 
 class InfoFragment : BaseFragment<FragmentInfoBinding>(FragmentInfoBinding::bind,R.layout.fragment_info),InfoFragmentLoadView,InfoFragmentChangeImgView {
@@ -140,12 +134,10 @@ class InfoFragment : BaseFragment<FragmentInfoBinding>(FragmentInfoBinding::bind
         InfoLoadService(this).tryPostInfoLoad(InfoLoadRequest("getUserInfo"))
     }
     override fun onPostInfoLoadSuccess(response: InfoLoadResponse) {
-        var bitmapImage:Bitmap
         if(response.data.result){
             Log.d("이미지 로드 성공 여부 - ","성공")
-            if(response.data.info.image!=null){ //이미 업로드해놓은 이미지가 존재하는 경우에는 프로필에 이미지 set
-                bitmapImage = bitmapConverter.Base64ToBitmap(response.data.info.image.toString()) //base64(string)를 bitmap으로 변경
-                binding.infoProfile.setImageBitmap(bitmapImage)
+            if(response.data.info.imageUrl!=null){ //이미 업로드해놓은 이미지가 존재하는 경우에는 프로필에 이미지 set
+                Glide.with(this).asBitmap().load(response.data.info.imageUrl.toString()).into(binding.infoProfile)
             }
             else{
                 binding.infoProfile.setImageResource(R.drawable.info_profile)
@@ -157,8 +149,8 @@ class InfoFragment : BaseFragment<FragmentInfoBinding>(FragmentInfoBinding::bind
     override fun onPostInfoLoadFailure(message: String) {
         Log.d("프로필 load 통신오류","$message")
     }
-    //프로필 수정
 
+    //프로필 수정
     private fun changeProfileImg(profileBase64:String){
         InfoChangeImgService(this).tryPostInfoChangeImg(InfoChangeImgRequest("updateUserImage",
             "data:image/png;base64,$profileBase64"))

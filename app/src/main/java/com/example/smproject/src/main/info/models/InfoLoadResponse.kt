@@ -6,7 +6,7 @@ data class InfoLoadResponse(
 
 data class Info(
     val id: String,
-    val image: Any,
+    val imageUrl: Any?,
     val nickname: String
 )
 

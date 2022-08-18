@@ -6,12 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/arFragment"
-        android:name="com.google.ar.sceneform.ux.ArFragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
     <com.naver.maps.map.MapView
         android:id="@+id/ar_map"
         android:layout_width="0dp"
@@ -28,7 +22,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_margin="20dp"
-        android:visibility="visible"
+        android:visibility="gone"
         app:srcCompat="@drawable/ar_map_btn">
     </androidx.appcompat.widget.AppCompatImageView>
     <androidx.appcompat.widget.AppCompatImageView
@@ -38,9 +32,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_margin="20dp"
-        android:visibility="gone"
+        android:visibility="visible"
         app:srcCompat="@drawable/ar_cam_btn">
     </androidx.appcompat.widget.AppCompatImageView>
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>
