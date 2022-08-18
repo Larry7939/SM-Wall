@@ -2,24 +2,26 @@ package com.example.smproject.src.main
 
 
 import android.os.Bundle
-import android.view.View
 import androidx.fragment.app.FragmentManager
 import com.example.smproject.R
 import com.example.smproject.config.BaseActivity
 import com.example.smproject.databinding.ActivityMainBinding
-import com.example.smproject.src.main.ar.ArFragment
+import com.example.smproject.src.main.ar.BrFragment
 import com.example.smproject.src.main.info.InfoFragment
 import com.example.smproject.src.main.post.PostFragment
 import com.example.smproject.src.main.search.SearchFragment
+import com.google.ar.sceneform.ux.ArFragment
 
+import androidx.appcompat.app.AppCompatActivity;
 
 
 class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::inflate){
     private lateinit var fragmentManager:FragmentManager
-    private var fragmentAr: ArFragment? = null //ArFragment 객체 생성
+    private var fragmentAr: BrFragment? = null //ArFragment 객체 생성
     private var fragmentSearch:SearchFragment? = null
     private var fragmentPost:PostFragment? = null
     private var fragmentInfo:InfoFragment? = null
+
     override fun onPostResume() {
         super.onPostResume()
 
@@ -29,10 +31,12 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
         super.onCreate(savedInstanceState)
         fragmentManager = supportFragmentManager
         initBottomNavigation()
+
+        (fragmentAr as ArFragment).setOnTapPlaneGlbModel("Cappuccino_cup.glb")
     }
 
     private fun initBottomNavigation(){
-        fragmentAr = ArFragment()
+        fragmentAr = BrFragment()
         //초기 Fragment 설정
         fragmentManager.beginTransaction().replace(binding.mainFrame.id, fragmentAr!!,).commit() //첫 Fragment는 ar로 설정
         //mainMenu관련 설정
@@ -41,7 +45,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
             when(it.itemId){
                 R.id.first_tab->{
                     if(fragmentAr==null){ //Fragment가 null이면 초기화해주고 add->commit
-                        fragmentAr = ArFragment()
+                        fragmentAr = BrFragment()
                         fragmentManager.beginTransaction().add(binding.mainFrame.id, fragmentAr!!).commit()
                     }
                     else if(fragmentAr != null){ //null이 아니면 show

@@ -18,7 +18,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.SmProject">
-        <activity android:name=".src.splash.SplashActivity">
+        <activity android:name=".src.splash.SplashActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -42,6 +43,8 @@
         <meta-data
             android:name="com.naver.maps.map.CLIENT_ID"
             android:value="lvar9elarn" />
+
+        <meta-data android:name="com.google.ar.core" android:value="required" />
 
 
     </application>
