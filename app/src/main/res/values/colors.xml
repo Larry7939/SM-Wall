@@ -18,4 +18,5 @@
     <color name="hintText">#D5D5D5</color>
     <color name="basicBackground">#CCCCCC</color>
     <color name="holo_orange">#FC8600</color>
+    <color name="mainColor">#A1AFFF</color>
 </resources>
