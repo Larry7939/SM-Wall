@@ -36,8 +36,8 @@ class InfoFragment : BaseFragment<FragmentInfoBinding>(FragmentInfoBinding::bind
     lateinit var logoutDialog:LogoutDialog
     private lateinit var permissionLauncher:ActivityResultLauncher<String>
     private lateinit var launcher: ActivityResultLauncher<Intent>
-    private var bitmapConverter = BitmapConverter()
     private lateinit var profileImageBase64:String
+    private var bitmapConverter = BitmapConverter()
     fun newInstance(): Fragment {
         return InfoFragment()
     }
@@ -49,8 +49,7 @@ class InfoFragment : BaseFragment<FragmentInfoBinding>(FragmentInfoBinding::bind
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         loadProfileImage() //프로필 가져오기
-        context?.let{galleryPermission(it)}//갤러리 접근권한 설정
-        setProfileImage() //갤러리에서 가져오기
+        context?.let { setProfileImage(it) } //갤러리에서 가져오기
         logOut() //로그아웃
 
 
@@ -58,30 +57,32 @@ class InfoFragment : BaseFragment<FragmentInfoBinding>(FragmentInfoBinding::bind
     }
     private fun galleryPermission(context: Context){
         // permissionLauncher 선언(권한 요청용)
-        permissionLauncher = registerForActivityResult(
-            RequestPermission()
-        ) { isGranted: Boolean ->
-            if (isGranted) {
-                // 권한 있는 경우 실행할 코드...
-            } else {
-                AlertDialog.Builder(context)
-                    .setTitle("미디어 접근 권한")
-                    .setMessage("미디어를 첨부하시려면, 앱 접근 권한을 허용해 주세요.")
-                    .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, which ->
-                        val intent = Intent()
-                        intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
-                        val uri: Uri = Uri.fromParts(
-                            "package",
-                            BuildConfig.APPLICATION_ID, null
-                        )
-                        intent.data = uri
-                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                        startActivity(intent)
-                    })
-                    .create()
-                    .show()
-            }
-        }
+//        permissionLauncher = registerForActivityResult(
+//            RequestPermission()
+//        ) { isGranted: Boolean ->
+//            if (isGranted) {
+//                // 권한 있는 경우 실행할 코드...
+//            } else {
+//                AlertDialog.Builder(context)
+//                    .setTitle("미디어 접근 권한")
+//                    .setMessage("미디어를 첨부하시려면, 앱 접근 권한을 허용해 주세요.")
+//                    .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, which ->
+//                        val intent = Intent()
+//                        intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+//                        val uri: Uri = Uri.fromParts(
+//                            "package",
+//                            BuildConfig.APPLICATION_ID, null
+//                        )
+//                        intent.data = uri
+//                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+//                        startActivity(intent)
+//                    })
+//                    .create()
+//                    .show()
+//            }
+
+    }
+    private fun setProfileImage(context: Context){
         //launcher선언(앨범 열기용)
         launcher = registerForActivityResult(
             StartActivityForResult()
@@ -99,25 +100,24 @@ class InfoFragment : BaseFragment<FragmentInfoBinding>(FragmentInfoBinding::bind
                 changeProfileImg(profileImageBase64)
             }
         }
-    }
-    private fun setProfileImage(){
         // 앨범 버튼 눌렀을 때 권한 확인하고 요청하기 및 갤러리 실행
         binding.infoProfile.setOnClickListener { v ->
-            if (ContextCompat.checkSelfPermission(
-                    requireContext(),
-                    android.Manifest.permission.READ_EXTERNAL_STORAGE
-                ) == PackageManager.PERMISSION_GRANTED
-            ) {
+//            if (ContextCompat.checkSelfPermission(
+//                    requireContext(),
+//                    android.Manifest.permission.READ_EXTERNAL_STORAGE
+//                ) == PackageManager.PERMISSION_GRANTED
+//            ) {
                 // 권한 있는 경우 실행할 코드...
                 // launcher를 이용해서 갤러리에 요청 보내고 갤러리 실행시키기
                 val intent = Intent()
                 intent.type = "image/*"
                 intent.action = Intent.ACTION_GET_CONTENT
                 launcher.launch(intent)
-            } else {
-                // 권한 없는 경우, 권한 요청
-                permissionLauncher.launch(android.Manifest.permission.READ_EXTERNAL_STORAGE)
-            }
+//        }
+//            else {
+//                // 권한 없는 경우, 권한 요청
+//                permissionLauncher.launch(android.Manifest.permission.READ_EXTERNAL_STORAGE)
+//            }
         }
     }
     private fun logOut(){

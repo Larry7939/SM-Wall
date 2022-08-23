@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.smproject">
-
+<!--    인터넷 권한-->
     <uses-permission android:name="android.permission.INTERNET" />
 <!--    앨범 읽고 쓰기 권한-->
     <uses-permission android:name="android.permission.CAMERA"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-feature android:name="android.hardware.camera2"/>
+<!--    위치,앨범 접근 권한-->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+<!--    카메라 사용 권한-->
+    <uses-permission android:name="android.permission.CAMERA"/>
 <!--    scoped storage로 바뀌면서 WRITE_EXTERNAL_STORAGE는 허가받을 필요가 없어졌다.-->
-
 
     <application
         android:name=".config.ApplicationClass"
