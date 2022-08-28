@@ -2,14 +2,13 @@ package com.example.smproject.util
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.Bitmap.CompressFormat
 import android.graphics.BitmapFactory
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
 import android.net.Uri
+import android.provider.MediaStore
 import android.util.Base64
 import android.util.Log
 import java.io.ByteArrayOutputStream
+import java.util.*
 
 
 class BitmapConverter{
@@ -28,14 +27,22 @@ class BitmapConverter{
         val byteArray: ByteArray = byteArrayOutputStream.toByteArray()
         return(Base64.encodeToString(byteArray, Base64.DEFAULT))
     }
-//    fun imgToBase64(iv: Drawable): String? {
-//    var bitmapDrawable = iv as BitmapDrawable
-//    var bitmap =  bitmapDrawable.bitmap
-//    val bos = ByteArrayOutputStream()
-//    bitmap.compress(CompressFormat.PNG, 100, bos)
-//    val bb = bos.toByteArray()
-//    return(Base64.encodeToString(bb, Base64.DEFAULT))
+////
+////    fun imgToBase64(iv: AppCompatImageView): String? {
+////    var bitmapDrawable = iv as BitmapDrawable
+////    var bitmap =  bitmapDrawable.bitmap
+////    val bos = ByteArrayOutputStream()
+////    bitmap.compress(CompressFormat.PNG, 60, bos)
+////    val bb = bos.toByteArray()
+////    return(Base64.encodeToString(bb, Base64.DEFAULT))
 //}
+    fun  getImageUri(inContext:Context? ,inImage:Bitmap ):Uri {
+        val bytes :ByteArrayOutputStream =  ByteArrayOutputStream();
+        inImage.compress(Bitmap.CompressFormat.PNG, 100, bytes);
+        val path:String  = MediaStore.Images.Media.insertImage(inContext?.contentResolver, inImage, UUID.randomUUID().toString() + ".png", "drawing")
+        return Uri.parse(path)
+    }
+
     fun uriToBase64(context:Context,uri: Uri): String {
     val inputStream = context.contentResolver.openInputStream(uri!!)
     val img:Bitmap = BitmapFactory.decodeStream(inputStream)

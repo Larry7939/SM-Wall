@@ -30,7 +30,10 @@ class LoadingDialog(context: Context, loadingType:Int) : Dialog(context) {
             binding.loadingTv.text = "로그인 중입니다." //로그인 중입니다.
         }
         else if(loadingtype==1){
-            binding.loadingTv.text = "회원가입 중입니다.".toString() // 회원가입 중입니다.
+            binding.loadingTv.text = "회원가입 중입니다."// 회원가입 중입니다.
+        }
+        else if(loadingtype==2){
+            binding.loadingTv.text = "작성중"
         }
     }
     override fun show() {

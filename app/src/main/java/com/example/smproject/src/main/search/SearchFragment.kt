@@ -2,18 +2,23 @@ package com.example.smproject.src.main.search
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.View
 import com.example.smproject.R
 import com.example.smproject.config.BaseFragment
 import com.example.smproject.databinding.FragmentSearchBinding
+import com.example.smproject.src.main.getPostApi.GetPostListService
+import com.example.smproject.src.main.getPostApi.GetPostListView
+import com.example.smproject.src.main.getPostApi.models.GetPostListRequest
+import com.example.smproject.src.main.getPostApi.models.GetPostListResonse
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraPosition
 import com.naver.maps.map.MapView
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
 
-class SearchFragment : BaseFragment<FragmentSearchBinding>(FragmentSearchBinding::bind,R.layout.fragment_search), OnMapReadyCallback {
+class SearchFragment : BaseFragment<FragmentSearchBinding>(FragmentSearchBinding::bind,R.layout.fragment_search), OnMapReadyCallback, GetPostListView {
 
     lateinit var mapViewSearch:MapView //레이아웃의 MapView와 연결
     private lateinit var naverMapSearch:NaverMap //네이버 맵관련 기능 구현 용도
@@ -34,6 +39,8 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(FragmentSearchBinding
         mapViewSearch = binding.searchMap
         mapViewSearch.onCreate(savedInstanceState)
         mapViewSearch.getMapAsync(this)
+
+        GetPostListService(this).tryGetPostList(GetPostListRequest("getPostList"))
     }
 
     override fun onMapReady(p0: NaverMap) {
@@ -58,5 +65,16 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(FragmentSearchBinding
     override fun onDestroyView() {
         super.onDestroyView()
         mapViewSearch.onDestroy()
+    }
+
+    override fun onGetPostListSuccess(response: GetPostListResonse) {
+        Log.d("Search Fragment GetPostList-code","${response.data.code}")
+        for(i in response.data.list.iterator()){
+            Log.d("${i.id}","${i.locationObj.lat}, ${i.locationObj.lng}")
+        }
+    }
+
+    override fun onGetPostListFailure(message: String) {
+        Log.d("게시물 목록 요청 실패",message)
     }
 }

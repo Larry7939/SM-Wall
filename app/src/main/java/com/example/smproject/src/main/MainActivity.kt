@@ -1,23 +1,28 @@
 package com.example.smproject.src.main
 
 import android.os.Bundle
+import android.os.Handler
+import android.view.View
 import androidx.fragment.app.FragmentManager
 import com.example.smproject.R
 import com.example.smproject.config.BaseActivity
 import com.example.smproject.databinding.ActivityMainBinding
-import com.example.smproject.src.main.ar.ArFragment
+import com.example.smproject.src.main.ar.MyArFragment
 import com.example.smproject.src.main.info.InfoFragment
 import com.example.smproject.src.main.post.PostFragment
 import com.example.smproject.src.main.search.SearchFragment
 import com.example.smproject.util.PermissionSupport
+import com.google.ar.core.ArCoreApk
+
 
 class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::inflate){
-    private lateinit var fragmentManager:FragmentManager
-    private var fragmentAr: ArFragment? = null //ArFragment 객체 생성
+    lateinit var fragmentManager:FragmentManager
+    private var fragmentAr: MyArFragment? = null //ArFragment 객체 생성
     private var fragmentSearch:SearchFragment? = null
-    private var fragmentPost:PostFragment? = null
+    var fragmentPost:PostFragment? = null
     private var fragmentInfo:InfoFragment? = null
     private lateinit var permission: PermissionSupport
+
     override fun onPostResume() {
         super.onPostResume()
     }
@@ -26,9 +31,10 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
         super.onCreate(savedInstanceState)
         permissionCheck()
 
-
         fragmentManager = supportFragmentManager
         initBottomNavigation()
+
+
     }
     //권한 체크
     private fun permissionCheck(){
@@ -52,16 +58,16 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
     }
 
     private fun initBottomNavigation(){
-        fragmentAr = ArFragment()
+        fragmentAr = MyArFragment()
         //초기 Fragment 설정
-        fragmentManager.beginTransaction().replace(binding.mainFrame.id, fragmentAr!!,).commit() //첫 Fragment는 ar로 설정
+        fragmentManager.beginTransaction().replace(binding.mainFrame.id, fragmentAr!!).commit() //첫 Fragment는 ar로 설정
         //mainMenu관련 설정
         binding.mainMenu.setOnItemSelectedListener {
             //하단 메뉴가 선택되면, Fragment의 Transaction이 시작되고, 각 menu의 id에 따라 다른 Fragment로의 add및 commit이 이뤄진다.
             when(it.itemId){
                 R.id.first_tab->{
                     if(fragmentAr==null){ //Fragment가 null이면 초기화해주고 add->commit
-                        fragmentAr = ArFragment()
+                        fragmentAr = MyArFragment()
                         fragmentManager.beginTransaction().add(binding.mainFrame.id, fragmentAr!!).commit()
                     }
                     else if(fragmentAr != null){ //null이 아니면 show
@@ -141,4 +147,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
             }
         }
     }
+
+
 }

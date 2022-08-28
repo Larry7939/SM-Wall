@@ -66,7 +66,7 @@ class InfoFragment : BaseFragment<FragmentInfoBinding>(FragmentInfoBinding::bind
 //                AlertDialog.Builder(context)
 //                    .setTitle("미디어 접근 권한")
 //                    .setMessage("미디어를 첨부하시려면, 앱 접근 권한을 허용해 주세요.")
-//                    .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, which ->
+//                    .setPositiveButton("확 인", DialogInterface.OnClickListener { dialog, which ->
 //                        val intent = Intent()
 //                        intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
 //                        val uri: Uri = Uri.fromParts(

@@ -4,13 +4,13 @@ plugins {
 }
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 31
     buildToolsVersion "30.0.3"
 
     defaultConfig {
         applicationId "com.example.smproject"
-        minSdkVersion 24
-        targetSdkVersion 30
+        minSdkVersion 27
+        targetSdkVersion 31
         versionCode 1
         versionName "1.0"
 
@@ -68,5 +68,6 @@ dependencies {
     implementation 'com.naver.maps:map-sdk:3.15.0'
     //위치값을 가져오기 위한 구글플레이서비스 API
     implementation 'com.google.android.gms:play-services-location:18.0.0'
-
+    //sceneform ARCORE
+    implementation "com.gorisse.thomas.sceneform:sceneform:1.20.5"
 }
