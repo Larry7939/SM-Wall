@@ -1,19 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.smproject">
-<!--    인터넷 권한-->
-    <uses-permission android:name="android.permission.INTERNET" />
-<!--    앨범 읽고 쓰기 권한-->
+    <!-- 인터넷 권한 -->
+    <uses-permission android:name="android.permission.INTERNET" /> <!-- 앨범 읽고 쓰기 권한 -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-feature android:name="android.hardware.camera2"/>
-<!--    <uses-feature android:name="android.hardware.camera.ar" />-->
-<!--    위치,앨범 접근 권한-->
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-<!--    카메라 사용 권한-->
-    <uses-permission android:name="android.permission.CAMERA"/>
-<!--    scoped storage로 바뀌면서 WRITE_EXTERNAL_STORAGE는 허가받을 필요가 없어졌다.-->
+    <uses-feature android:name="android.hardware.camera2" /> <!-- <uses-feature android:name="android.hardware.camera.ar" /> -->
+    <!-- 위치,앨범 접근 권한 -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> <!-- 카메라 사용 권한 -->
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
         android:name=".config.ApplicationClass"
@@ -23,25 +19,33 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.SmProject">
-        <activity android:name=".src.splash.SplashActivity" android:exported="true">
+        <activity android:name=".src.main.ar.ArActivity"></activity>
+        <activity
+            android:name=".src.splash.SplashActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".src.main.MainActivity" android:exported="true"/>
-        <activity android:name=".src.login.idsignup.IdSignup" android:exported="true"/>
-        <activity android:name=".src.login.idsignin.IdSignin" android:exported="true"/>
-
-        <!--    // 갤러리의 이미지를 다루기 위해서 필요-->
+        <activity
+            android:name=".src.main.MainActivity"
+            android:exported="true" />
+        <activity
+            android:name=".src.login.idsignup.IdSignup"
+            android:exported="true" />
+        <activity
+            android:name=".src.login.idsignin.IdSignin"
+            android:exported="true" /> <!-- // 갤러리의 이미지를 다루기 위해서 필요 -->
         <provider
-            android:authorities="com.example.smproject"
             android:name="androidx.core.content.FileProvider"
+            android:authorities="com.example.smproject"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_path"/>
+                android:resource="@xml/file_path" />
         </provider>
 
         <meta-data
@@ -50,7 +54,6 @@
         <meta-data
             android:name="com.google.ar.core"
             android:value="required" />
-
     </application>
 
 </manifest>

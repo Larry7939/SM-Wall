@@ -1,6 +1,7 @@
 package com.example.smproject.src.main.ar
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -12,9 +13,6 @@ import com.example.smproject.src.main.getPostApi.GetPostListService
 import com.example.smproject.src.main.getPostApi.GetPostListView
 import com.example.smproject.src.main.getPostApi.models.GetPostListRequest
 import com.example.smproject.src.main.getPostApi.models.GetPostListResonse
-import com.google.ar.core.Config
-import com.google.ar.core.Session
-import com.google.ar.sceneform.ux.ArFragment
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraPosition
 import com.naver.maps.map.MapView
@@ -58,10 +56,8 @@ class MyArFragment : BaseFragment<FragmentMyarBinding>(FragmentMyarBinding::bind
         binding.arCamBtn.setOnClickListener {
             binding.arMapBtn.visibility = View.VISIBLE
             binding.arCamBtn.visibility = View.GONE
-            // Load model.glb from assets folder or http url
-            (childFragmentManager.findFragmentById(R.id.arFragment) as ArFragment?)?.setOnTapPlaneGlbModel("model.glb")
-            var session = Session(context)
-            var config = Config(session)
+            val intent = Intent(activity,ArActivity::class.java)
+            startActivity(intent)
         }
         //게시물 목록 API
         GetPostListService(this).tryGetPostList(GetPostListRequest("getPostList"))
