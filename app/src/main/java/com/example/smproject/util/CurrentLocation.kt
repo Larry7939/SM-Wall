@@ -46,7 +46,6 @@ class CurrentLocation(context: Context){
             onLocationChanged(locationResult.lastLocation)
         }
     }
-
     // 시스템으로 부터 받은 위치정보를 화면에 갱신해주는 메소드
     fun onLocationChanged(location: Location) {
         mLastLocation = location

@@ -20,7 +20,6 @@ import com.bumptech.glide.Glide
 import com.example.smproject.R
 import com.example.smproject.config.BaseFragment
 import com.example.smproject.databinding.FragmentPostBinding
-import com.example.smproject.src.main.MainActivity
 import com.example.smproject.src.main.post.models.PostPostingRequest
 import com.example.smproject.src.main.post.models.PostPostingResponse
 import com.example.smproject.util.BitmapConverter
