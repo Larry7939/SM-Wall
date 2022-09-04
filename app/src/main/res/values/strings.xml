@@ -9,6 +9,5 @@
     <string name="loading_signup">회원가입 중입니다.</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="google_maps_key">AIzaSyBw2TjD8AtsQsrHWO_vIFWKXNNWhfTo7NI</string>
 
 </resources>
