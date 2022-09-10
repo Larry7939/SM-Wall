@@ -18,12 +18,6 @@
         app:layout_constraintEnd_toEndOf="parent">
     </com.naver.maps.map.MapView>
 
-
-
-
-
-
-
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/ar_map_btn"
         android:layout_width="wrap_content"

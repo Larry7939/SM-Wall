@@ -76,11 +76,12 @@ dependencies {
     //sceneform ARCORE
 //    implementation "com.gorisse.thomas.sceneform:sceneform:1.20.5"
 
-    //Maps & Loction
-    implementation 'com.google.android.gms:play-services-location:17.0.0'
-    implementation 'com.google.android.gms:play-services-maps:17.0.0'
-    implementation 'com.google.maps.android:maps-utils-ktx:1.7.0'
-    //ARCore
-    implementation 'com.google.ar.sceneform.ux:sceneform-ux:1.15.0'
+//    //Maps & Loction
+//    implementation 'com.google.android.gms:play-services-location:17.0.0'
+//    implementation 'com.google.android.gms:play-services-maps:17.0.0'
+//    implementation 'com.google.maps.android:maps-utils-ktx:1.7.0'
+//    //ARCore
+//    implementation 'com.google.ar.sceneform.ux:sceneform-ux:1.15.0'
+    implementation project(':unityLibrary')
 
 }

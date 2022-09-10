@@ -19,6 +19,9 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>(ActivitySplashBinding
         // jwt는 로그인 성공 시 sp에 저장된다.
         if(ApplicationClass.sSharedPreferences.getString(ApplicationClass.X_ACCESS_TOKEN,"")!=""){
             Handler(Looper.getMainLooper()).postDelayed({
+
+
+
                 showCustomToast("자동로그인 되었습니다.")
                 startActivity(Intent(this, MainActivity::class.java))
                 overridePendingTransition(0,0)

@@ -12,7 +12,6 @@ import com.example.smproject.src.main.info.InfoFragment
 import com.example.smproject.src.main.post.PostFragment
 import com.example.smproject.src.main.search.SearchFragment
 import com.example.smproject.util.PermissionSupport
-import com.google.ar.core.ArCoreApk
 
 
 class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::inflate){
