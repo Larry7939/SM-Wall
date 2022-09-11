@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
 import com.example.smproject.R
+import com.example.smproject.config.ApplicationClass
 import com.example.smproject.config.BaseFragment
 import com.example.smproject.databinding.FragmentMyarBinding
 import com.example.smproject.src.main.getPostApi.GetPostListService
@@ -28,7 +29,6 @@ import com.unity3d.player.UnityPlayerActivity
 class MyArFragment : BaseFragment<FragmentMyarBinding>(FragmentMyarBinding::bind,R.layout.fragment_myar), OnMapReadyCallback,GetPostListView {
     lateinit var mapViewAr: MapView //레이아웃의 MapView와 연결
     private lateinit var naverMapAr:NaverMap //네이버 맵관련 기능 구현 용도
-    private lateinit var currentLocation: CurrentLocation
     private var latitude:Double=0.0//위도
     private var longtitude:Double=0.0 //경도
     private var zoom = 16.2 //줌 레벨
@@ -45,13 +45,14 @@ class MyArFragment : BaseFragment<FragmentMyarBinding>(FragmentMyarBinding::bind
     //게시물 사진:base64, 본문:String, 공유여부:Boolean, 위도,경도 : String
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        currentLocation = CurrentLocation(context)
+        CurrentLocation(requireContext()).returnLocation()
+        Log.d("Ar 현재 위치","${ApplicationClass.latitude},${ApplicationClass.longtidute}")
+        latitude = ApplicationClass.latitude
+        longtitude = ApplicationClass.longtidute
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        latitude = currentLocation.returnLocation().first
-        longtitude = currentLocation.returnLocation().second
 
         //네이버 지도 생성
         mapViewAr = binding.arMap
@@ -70,7 +71,6 @@ class MyArFragment : BaseFragment<FragmentMyarBinding>(FragmentMyarBinding::bind
 
     }
     override fun onMapReady(p1: NaverMap) {
-
 
         naverMapAr = p1
         //지도 타입 선택

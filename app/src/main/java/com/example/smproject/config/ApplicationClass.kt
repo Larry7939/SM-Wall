@@ -13,13 +13,15 @@ import java.util.concurrent.TimeUnit
 class ApplicationClass: Application() {
 
     val API_URL = "https://gjv43xpql0.execute-api.ap-northeast-2.amazonaws.com/default/smwall/" // 서버 주소
+
     //코틀린 전역변수 문법
     companion object{
         lateinit var sSharedPreferences: SharedPreferences
         //JWT Token Header 키값
         var X_ACCESS_TOKEN = "${R.string.jwt_token_header}"
         lateinit var sRetrofit: Retrofit
-
+        var latitude:Double=0.0
+        var longtidute:Double=0.0
     }
     //앱 최초 생성 시에 sp를 새로만들어주고 레트로핏 인스턴스 생성
     override fun onCreate() {

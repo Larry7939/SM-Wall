@@ -18,6 +18,7 @@ import androidx.core.view.children
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.example.smproject.R
+import com.example.smproject.config.ApplicationClass
 import com.example.smproject.config.BaseFragment
 import com.example.smproject.databinding.FragmentPostBinding
 import com.example.smproject.src.main.post.models.PostPostingRequest
@@ -180,9 +181,14 @@ class PostFragment : BaseFragment<FragmentPostBinding>(FragmentPostBinding::bind
             hashStringToPost = hashList.joinToString(",")
             hashStringToPost = hashStringToPost.replace("#","")
         }
+
+
+        CurrentLocation(requireContext()).returnLocation()
         //위도,경도
-        lat = CurrentLocation(requireContext()).returnLocation().first.toString()
-        lng = CurrentLocation(requireContext()).returnLocation().second.toString()
+        lat = ApplicationClass.latitude.toString()
+        lng = ApplicationClass.longtidute.toString()
+        Log.d("Post - 현재 위치","${lat},${lng}")
+
         //error code 301 - 이미지와 내용 둘다 없는 경우
         PostPostingService(this).tryPostPosting(PostPostingRequest("createPost", contents, postImages, hashStringToPost, isPrivate, lat, lng))
     }

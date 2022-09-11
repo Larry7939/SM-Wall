@@ -5,8 +5,10 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Looper
+import android.util.Log
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import com.example.smproject.config.ApplicationClass
 import com.google.android.gms.location.*
 
 class CurrentLocation(context: Context){
@@ -17,12 +19,11 @@ class CurrentLocation(context: Context){
     private var lat:Double = 0.0
     private lateinit var mLocationRequest: LocationRequest // 위치 정보 요청의 매개변수를 저장하는 변수
 //    private val REQUEST_PERMISSION_LOCATION = 10
-    fun returnLocation(): Pair<Double, Double> {
+    fun returnLocation(){
         mLocationRequest =  LocationRequest.create().apply {
             priority = LocationRequest.PRIORITY_HIGH_ACCURACY
         }
         startLocationUpdates()
-        return Pair(lat,lng)
     }
 
     private fun startLocationUpdates() {
@@ -47,11 +48,15 @@ class CurrentLocation(context: Context){
         }
     }
     // 시스템으로 부터 받은 위치정보를 화면에 갱신해주는 메소드
-    fun onLocationChanged(location: Location) {
+    fun onLocationChanged(location: Location){
         mLastLocation = location
-//        Toast.makeText(context, "위도 : ${mLastLocation.latitude}\n경도 : ${mLastLocation.longitude}", Toast.LENGTH_SHORT).show()
-        lat = mLastLocation.latitude
-        lng = mLastLocation.longitude
+        Toast.makeText(context, "위도 : ${mLastLocation.latitude}\n경도 : ${mLastLocation.longitude}", Toast.LENGTH_SHORT).show()
+        ApplicationClass.latitude = mLastLocation.latitude
+        ApplicationClass.longtidute = mLastLocation.longitude
+        Log.d("CurrentLocation 현재 위치","${ApplicationClass.latitude},${ApplicationClass.longtidute}")
+
+//        Log.d("CurrentLocation 현재 위치","${lat},${lng}")
+
     }
 
 
