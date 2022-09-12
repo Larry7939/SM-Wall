@@ -10,18 +10,16 @@ import com.example.smproject.databinding.ActivitySplashBinding
 import com.example.smproject.src.login.idsignin.IdSignin
 import com.example.smproject.src.main.MainActivity
 import com.example.smproject.src.main.info.InfoFragment
+import com.example.smproject.util.CurrentLocation
 
 class SplashActivity : BaseActivity<ActivitySplashBinding>(ActivitySplashBinding::inflate) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        CurrentLocation(this).returnLocation()
         // sp내부의 jwt유무를 판별하여 로그인 페이지 또는 메인 페이지로 전환
         // jwt는 로그인 성공 시 sp에 저장된다.
         if(ApplicationClass.sSharedPreferences.getString(ApplicationClass.X_ACCESS_TOKEN,"")!=""){
             Handler(Looper.getMainLooper()).postDelayed({
-
-
-
                 showCustomToast("자동로그인 되었습니다.")
                 startActivity(Intent(this, MainActivity::class.java))
                 overridePendingTransition(0,0)

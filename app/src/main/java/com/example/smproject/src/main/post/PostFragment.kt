@@ -185,12 +185,10 @@ class PostFragment : BaseFragment<FragmentPostBinding>(FragmentPostBinding::bind
 
         CurrentLocation(requireContext()).returnLocation()
         //위도,경도
-        lat = ApplicationClass.latitude.toString()
-        lng = ApplicationClass.longtidute.toString()
-        Log.d("Post - 현재 위치","${lat},${lng}")
+        Log.d("Post - 현재 위치","${ApplicationClass.latitude},${ApplicationClass.longtidute}")
 
         //error code 301 - 이미지와 내용 둘다 없는 경우
-        PostPostingService(this).tryPostPosting(PostPostingRequest("createPost", contents, postImages, hashStringToPost, isPrivate, lat, lng))
+        PostPostingService(this).tryPostPosting(PostPostingRequest("createPost", contents, postImages, hashStringToPost, isPrivate, ApplicationClass.latitude.toString(),ApplicationClass.longtidute.toString()))
     }
 
     override fun onPostPostingSuccess(response: PostPostingResponse) {

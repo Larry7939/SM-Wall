@@ -90,5 +90,29 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
     </com.naver.maps.map.MapView>
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/search_fab_refresh"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/mainColor"
+        android:contentDescription="새로고침"
+        android:src="@drawable/refresh"
+        app:backgroundTint="@color/mainColor"
+        android:layout_marginBottom="15dp"
+        app:layout_constraintStart_toStartOf="@id/search_fab_tracking"
+        app:layout_constraintEnd_toEndOf="@id/search_fab_tracking"
+        app:layout_constraintBottom_toTopOf="@id/search_fab_tracking"/>
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/search_fab_tracking"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/mainColor"
+        android:contentDescription="추적"
+        android:src="@drawable/map_tracking"
+        app:backgroundTint="@color/mainColor"
+        android:layout_marginStart="30dp"
+        android:layout_marginBottom="40dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

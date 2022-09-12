@@ -17,27 +17,28 @@ import com.example.smproject.src.main.getPostApi.models.GetPostListResonse
 import com.example.smproject.src.main.getPostApi.models.Post
 import com.example.smproject.util.CurrentLocation
 import com.naver.maps.geometry.LatLng
-import com.naver.maps.map.CameraPosition
-import com.naver.maps.map.MapView
-import com.naver.maps.map.NaverMap
-import com.naver.maps.map.OnMapReadyCallback
+import com.naver.maps.map.*
 import com.naver.maps.map.overlay.Marker
+import com.naver.maps.map.overlay.Overlay
 import com.naver.maps.map.overlay.OverlayImage
+import com.naver.maps.map.util.FusedLocationSource
 import com.unity3d.player.UnityPlayerActivity
 
 
 class MyArFragment : BaseFragment<FragmentMyarBinding>(FragmentMyarBinding::bind,R.layout.fragment_myar), OnMapReadyCallback,GetPostListView {
     lateinit var mapViewAr: MapView //레이아웃의 MapView와 연결
     private lateinit var naverMapAr:NaverMap //네이버 맵관련 기능 구현 용도
-    private var latitude:Double=0.0//위도
-    private var longtitude:Double=0.0 //경도
     private var zoom = 16.2 //줌 레벨
-    private var tilt = 45.0//기울임
-
+    private var tilt = 0.0//기울임
+    private lateinit var locationSource:FusedLocationSource
+    private val LOCATION_PERMISSION_REQUEST_CODE = 1000
     private lateinit var cameraPos: CameraPosition
 
     //Post는 게시물 id,위치정보가 담긴 response model임.
     private lateinit var locationList:ArrayList<Post>
+    //set된 Marker들을 모아놓은 MarkerList
+    private var markerList:ArrayList<Marker> = arrayListOf()
+
 
     fun newInstance(): Fragment {
         return MyArFragment()
@@ -47,13 +48,31 @@ class MyArFragment : BaseFragment<FragmentMyarBinding>(FragmentMyarBinding::bind
         super.onAttach(context)
         CurrentLocation(requireContext()).returnLocation()
         Log.d("Ar 현재 위치","${ApplicationClass.latitude},${ApplicationClass.longtidute}")
-        latitude = ApplicationClass.latitude
-        longtitude = ApplicationClass.longtidute
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        locationSource = FusedLocationSource(this,LOCATION_PERMISSION_REQUEST_CODE) //현재 위치 나타내기 위한 locationSource
 
+        //새로고침버튼을 누르면 게시물을 받아옴.
+        binding.arFabRefresh.setOnClickListener{
+            //게시물 목록 API
+            showCustomToast("게시물 새로고침 완료")
+            GetPostListService(this).tryGetPostList(GetPostListRequest("getPostList"))
+
+            Log.d("MarkerList","$markerList")
+            Log.d("MarkerList 첫번째 원소 id","${markerList[0].tag}")
+            for(i in 0 until markerList.size){
+                Log.d("게시물 id목록 ="," ${markerList[i].tag}}")
+            }
+        }
+
+            //현위치 추적버튼을 누르면 현위치 갱신 및 지도 위치 변경
+        binding.arFabTracking.setOnClickListener {
+            CurrentLocation(requireContext()).returnLocation()
+            cameraPos = CameraPosition(LatLng(ApplicationClass.latitude, ApplicationClass.longtidute), zoom, tilt, 0.0)
+            naverMapAr.cameraPosition = cameraPos
+        }
         //네이버 지도 생성
         mapViewAr = binding.arMap
         mapViewAr.onCreate(savedInstanceState)
@@ -62,6 +81,8 @@ class MyArFragment : BaseFragment<FragmentMyarBinding>(FragmentMyarBinding::bind
             binding.arCamBtn.visibility = View.VISIBLE
             binding.arMapBtn.visibility = View.GONE
         }
+
+
         //cam버튼 누르면 unity실행
         binding.arCamBtn.setOnClickListener {
             binding.arMapBtn.visibility = View.VISIBLE
@@ -71,6 +92,7 @@ class MyArFragment : BaseFragment<FragmentMyarBinding>(FragmentMyarBinding::bind
 
     }
     override fun onMapReady(p1: NaverMap) {
+        CurrentLocation(requireContext()).returnLocation()
 
         naverMapAr = p1
         //지도 타입 선택
@@ -78,9 +100,10 @@ class MyArFragment : BaseFragment<FragmentMyarBinding>(FragmentMyarBinding::bind
         //건물 표시
         naverMapAr.setLayerGroupEnabled("Building", true)
         //위치 및 각도 조정
-        cameraPos = CameraPosition(LatLng(latitude, longtitude), zoom, tilt, 0.0)
+        cameraPos = CameraPosition(LatLng(ApplicationClass.latitude, ApplicationClass.longtidute), zoom, tilt, 0.0)
         naverMapAr.cameraPosition = cameraPos
-
+        naverMapAr.locationSource = locationSource //현재위치 표시
+        naverMapAr.locationTrackingMode = LocationTrackingMode.Follow
         //게시물 목록 API
         GetPostListService(this).tryGetPostList(GetPostListRequest("getPostList"))
 
@@ -98,7 +121,9 @@ class MyArFragment : BaseFragment<FragmentMyarBinding>(FragmentMyarBinding::bind
         super.onDestroyView()
         mapViewAr.onDestroy()
     }
-    private fun setMark(marker: Marker, lat:Double, lng:Double, resourceId:Int){
+    private fun setMark(id:Int,marker: Marker, lat:Double, lng:Double, resourceId:Int){
+        //서버에서 받아온 게시물의 id를 tag에 넣음.
+        marker.tag = id
         //원근감 표시
         marker.isIconPerspectiveEnabled = true
         //아이콘 지정
@@ -109,18 +134,38 @@ class MyArFragment : BaseFragment<FragmentMyarBinding>(FragmentMyarBinding::bind
         marker.position = LatLng(lat,lng)
         //마커 우선순위
         marker.zIndex = 10
+
+        //위에서 만든 마커를 markerList에 추가
+        markerList.add(marker)
+
         //마커 표시
         marker.map = naverMapAr
     }
 
     override fun onGetPostListSuccess(response: GetPostListResonse) {
+        //새로고침하면 게시물 목록을 다시 받아오면서 map에서 marker를 지우고 markerList를 초기화
+        if(markerList.isNotEmpty()){
+            for(i in markerList){
+                i.map = null
+            }
+            markerList.clear()
+        }
+
         Log.d("게시물 목록","")
         locationList = response.data.list
         for(i in locationList.iterator()){
             Log.d("${i.id}","${i.locationObj.lat}, ${i.locationObj.lng}")
         }
         for(i in locationList.iterator()){
-            setMark(Marker(),i.locationObj.lat.toDouble(),i.locationObj.lng.toDouble(),R.drawable.ar_map_marker_test)
+            setMark(i.id,Marker(),i.locationObj.lat.toDouble(),i.locationObj.lng.toDouble(),R.drawable.ar_map_marker_test)
+        }
+
+        //각 marker에 리스너 설정
+        for (i in 0 until markerList.size) {
+            markerList[i].onClickListener = Overlay.OnClickListener {
+                showCustomToast("${markerList[i].tag }")
+                false
+            }
         }
     }
     override fun onGetPostListFailure(message: String) {
