@@ -74,9 +74,11 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
                         fragmentManager.beginTransaction().add(binding.mainFrame.id, fragmentAr!!).commit()
                     }
                     else if(fragmentAr != null){ //null이 아니면 show
+                        fragmentManager.beginTransaction().hide(fragmentAr!!).commit()
                         fragmentManager.beginTransaction().show(fragmentAr!!).commit()
                     }
                     if(fragmentSearch!=null){
+                        fragmentManager.beginTransaction().hide(fragmentSearch!!).commit()
                         fragmentManager.beginTransaction().remove(fragmentSearch!!).commit()
                         fragmentSearch = null
                     }
@@ -85,6 +87,9 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
                     }
                     if(fragmentInfo!=null){
                         fragmentManager.beginTransaction().hide(fragmentInfo!!).commit()
+                    }
+                    if(fragmentPosted !=null){
+                        fragmentManager.beginTransaction().hide(fragmentPosted!!).commit()
                     }
                     true
 
@@ -95,6 +100,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
                         fragmentManager.beginTransaction().add(binding.mainFrame.id,fragmentSearch!!).commit()
                     }
                     else if(fragmentSearch != null){ //null이 아니면 show
+                        fragmentSearch = SearchFragment()
                         fragmentManager.beginTransaction().show(fragmentSearch!!).commit()
                     }
                     if(fragmentAr!=null){
@@ -124,6 +130,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
                     }
                     if(fragmentSearch!=null){
                         fragmentManager.beginTransaction().hide(fragmentSearch!!).commit()
+                        fragmentManager.beginTransaction().remove(fragmentSearch!!).commit()
+                        fragmentSearch = null
                     }
                     if(fragmentInfo!=null){
                         fragmentManager.beginTransaction().hide(fragmentInfo!!).commit()
@@ -146,6 +154,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
                     }
                     if(fragmentSearch!=null){
                         fragmentManager.beginTransaction().hide(fragmentSearch!!).commit()
+                        fragmentManager.beginTransaction().remove(fragmentSearch!!).commit()
+                        fragmentSearch = null
                     }
                     if(fragmentPost!=null){
                         fragmentManager.beginTransaction().hide(fragmentPost!!).commit()

@@ -24,7 +24,7 @@ import com.naver.maps.map.util.FusedLocationSource
 class SearchFragment : BaseFragment<FragmentSearchBinding>(FragmentSearchBinding::bind,R.layout.fragment_search), OnMapReadyCallback, GetPostListView {
 
     lateinit var mapViewSearch:MapView //레이아웃의 MapView와 연결
-    private lateinit var naverMapSearch:NaverMap //네이버 맵관련 기능 구현 용도
+    private var naverMapSearch:NaverMap?=null //네이버 맵관련 기능 구현 용도
     private var zoom = 16.2 //줌 레벨
     private var tilt = 0.0//기울임
     private lateinit var locationSource:FusedLocationSource
@@ -38,6 +38,10 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(FragmentSearchBinding
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -54,7 +58,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(FragmentSearchBinding
         binding.searchFabTracking.setOnClickListener {
             CurrentLocation(requireContext()).returnLocation()
             cameraPos = CameraPosition(LatLng(ApplicationClass.latitude, ApplicationClass.longtidute), zoom, tilt, 0.0)
-            naverMapSearch.cameraPosition = cameraPos
+            naverMapSearch?.cameraPosition  = cameraPos
         }
 
         mapViewSearch = binding.searchMap
@@ -67,16 +71,15 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(FragmentSearchBinding
     override fun onMapReady(p0: NaverMap) {
         naverMapSearch = p0
         //지도 타입 선택
-        naverMapSearch.mapType = NaverMap.MapType.Basic
+        naverMapSearch!!.mapType = NaverMap.MapType.Basic
         //건물 표시
-        naverMapSearch.setLayerGroupEnabled("Building" ,true)
+        naverMapSearch!!.setLayerGroupEnabled("Building" ,true)
         //위치 및 각도 조정
         cameraPos = CameraPosition(LatLng(ApplicationClass.latitude, ApplicationClass.longtidute), zoom,tilt, 0.0)
-        naverMapSearch.cameraPosition = cameraPos
+        naverMapSearch!!.cameraPosition = cameraPos
 
-        naverMapSearch.locationSource = locationSource //현재위치 표시
-        naverMapSearch.locationTrackingMode = LocationTrackingMode.Follow
-
+        naverMapSearch!!.locationSource = locationSource //현재위치 표시
+        naverMapSearch!!.locationTrackingMode = LocationTrackingMode.Follow
         //게시물 목록 API
         GetPostListService(this).tryGetPostList(GetPostListRequest("getPostList"))
     }
@@ -104,8 +107,11 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(FragmentSearchBinding
         marker.position = LatLng(lat,lng)
         //마커 우선순위
         marker.zIndex = 10
+        marker.captionText = "asadgas"
         //마커 표시
-        marker.map = naverMapSearch
+        if(naverMapSearch!=null){
+            marker.map = naverMapSearch
+        }
     }
     override fun onGetPostListSuccess(response: GetPostListResonse) {
         Log.d("게시물 목록","")
