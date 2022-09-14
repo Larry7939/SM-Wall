@@ -1,9 +1,6 @@
 package com.example.smproject.src.main
 
 import android.os.Bundle
-import android.os.Handler
-import android.view.View
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.example.smproject.R
 import com.example.smproject.config.BaseActivity
@@ -11,7 +8,6 @@ import com.example.smproject.databinding.ActivityMainBinding
 import com.example.smproject.src.main.ar.MyArFragment
 import com.example.smproject.src.main.info.InfoFragment
 import com.example.smproject.src.main.post.PostFragment
-import com.example.smproject.src.main.posted.PostedFragment
 import com.example.smproject.src.main.search.SearchFragment
 import com.example.smproject.util.CurrentLocation
 import com.example.smproject.util.PermissionSupport
@@ -23,7 +19,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
     private var fragmentSearch:SearchFragment? = null
     var fragmentPost:PostFragment? = null
     private var fragmentInfo:InfoFragment? = null
-    private var fragmentPosted: PostedFragment? = null
     private lateinit var permission: PermissionSupport
 
     override fun onPostResume() {
@@ -88,9 +83,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
                     if(fragmentInfo!=null){
                         fragmentManager.beginTransaction().hide(fragmentInfo!!).commit()
                     }
-                    if(fragmentPosted !=null){
-                        fragmentManager.beginTransaction().hide(fragmentPosted!!).commit()
-                    }
+
                     true
 
                 }
@@ -112,9 +105,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
                     if(fragmentInfo!=null){
                         fragmentManager.beginTransaction().hide(fragmentInfo!!).commit()
                     }
-                    if(fragmentPosted !=null){
-                        fragmentManager.beginTransaction().hide(fragmentPosted!!).commit()
-                    }
+
                     true
                 }
                 R.id.third_tab->{
@@ -136,9 +127,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
                     if(fragmentInfo!=null){
                         fragmentManager.beginTransaction().hide(fragmentInfo!!).commit()
                     }
-                    if(fragmentPosted !=null){
-                        fragmentManager.beginTransaction().hide(fragmentPosted!!).commit()
-                    }
+
                     true
                 }
                 R.id.fourth_tab->{
@@ -160,9 +149,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
                     if(fragmentPost!=null){
                         fragmentManager.beginTransaction().hide(fragmentPost!!).commit()
                     }
-                    if(fragmentPosted !=null){
-                        fragmentManager.beginTransaction().hide(fragmentPosted!!).commit()
-                    }
+
                     true
                 }
                 else -> false
@@ -170,32 +157,59 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
         }
     }
 
-    //하단 탭을 제외한 fragment화면 전환
-    fun replaceFragment(fragment: Fragment){
-        val fragmentManager = supportFragmentManager
-        val fragmentTransaction = fragmentManager.beginTransaction()
-
-        if(fragmentPosted==null){ //Fragment가 null이면 초기화해주고 add->commit
-            fragmentPosted = PostedFragment()
-            fragmentManager.beginTransaction().add(binding.mainFrame.id,fragmentPosted!!).commit()
-        }
-        if(fragmentPosted != null){ //null이 아니면 show
-            fragmentManager.beginTransaction().show(fragmentPosted!!).commit()
-        }
-
-        if(fragmentAr!=null){
-            fragmentManager.beginTransaction().hide(fragmentAr!!).commit()
-        }
-        if(fragmentSearch!=null){
-            fragmentManager.beginTransaction().hide(fragmentSearch!!).commit()
-            fragmentSearch = null
-        }
-        if(fragmentPost!=null){
-            fragmentManager.beginTransaction().hide(fragmentPost!!).commit()
-        }
-        if(fragmentInfo!=null){
-            fragmentManager.beginTransaction().hide(fragmentInfo!!).commit()
-        }
-    }
+//    //하단 탭을 제외한 fragment화면 전환(일단은 Posted만을 위한 함수)
+//    fun replaceFragment(fragment: Fragment){
+//        val fragmentManager = supportFragmentManager
+//        val fragmentTransaction = fragmentManager.beginTransaction()
+//
+//        if(fragmentPosted==null){ //Fragment가 null이면 초기화해주고 add->commit
+//            fragmentPosted = PostedFragment()
+//            fragmentManager.beginTransaction().add(binding.mainFrame.id,fragmentPosted!!).commit()
+//
+//        }
+//        if(fragmentPosted != null){ //null이 아니면 show
+//            fragmentManager.beginTransaction().show(fragmentPosted!!).commit()
+//        }
+//
+//        if(fragmentAr!=null){
+//            fragmentManager.beginTransaction().hide(fragmentAr!!).commit()
+//        }
+//        if(fragmentSearch!=null){
+//            fragmentManager.beginTransaction().hide(fragmentSearch!!).commit()
+//            fragmentSearch = null
+//        }
+//        if(fragmentPost!=null){
+//            fragmentManager.beginTransaction().hide(fragmentPost!!).commit()
+//        }
+//        if(fragmentInfo!=null){
+//            fragmentManager.beginTransaction().hide(fragmentInfo!!).commit()
+//        }
+//    }
+//    fun removeFragment(postedFragment:PostedFragment?,beforeFragment:String?){
+//
+//        val fragmentManager = supportFragmentManager
+//        val fragmentTransaction = fragmentManager.beginTransaction()
+//        if (postedFragment != null) {
+//            fragmentTransaction.hide(postedFragment).commit()
+//        }
+//        if (beforeFragment=="ar"){
+//            if(fragmentAr==null){ //Fragment가 null이면 초기화해주고 add->commit
+//                fragmentAr = MyArFragment()
+//                fragmentManager.beginTransaction().add(binding.mainFrame.id, fragmentAr!!).commit()
+//            }
+//            else {
+//                fragmentTransaction.show(fragmentAr!!).commit()
+//            }
+//        }
+//        if (beforeFragment =="search"){
+//            if(fragmentSearch==null){ //Fragment가 null이면 초기화해주고 add->commit
+//                fragmentSearch = SearchFragment()
+//                fragmentManager.beginTransaction().add(binding.mainFrame.id,fragmentSearch!!).commit()
+//            }
+//            else {
+//                fragmentTransaction.show(fragmentSearch!!).commit()
+//            }
+//        }
+//    }
 
 }

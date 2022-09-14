@@ -5,23 +5,32 @@ import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.View
+import androidx.core.os.bundleOf
+import androidx.fragment.app.setFragmentResult
 import com.example.smproject.R
 import com.example.smproject.config.ApplicationClass
 import com.example.smproject.config.BaseFragment
 import com.example.smproject.databinding.FragmentSearchBinding
+import com.example.smproject.src.main.MainActivity
 import com.example.smproject.src.main.getPostApi.GetPostListService
 import com.example.smproject.src.main.getPostApi.GetPostListView
 import com.example.smproject.src.main.getPostApi.models.GetPostListRequest
 import com.example.smproject.src.main.getPostApi.models.GetPostListResonse
 import com.example.smproject.src.main.getPostApi.models.Post
+import com.example.smproject.src.main.posted.PostedService
+import com.example.smproject.src.main.posted.PostedView
+import com.example.smproject.src.main.posted.models.PostedRequest
+import com.example.smproject.src.main.posted.models.PostedResponse
 import com.example.smproject.util.CurrentLocation
+import com.example.smproject.util.PostedDialog
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.*
 import com.naver.maps.map.overlay.Marker
+import com.naver.maps.map.overlay.Overlay
 import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.util.FusedLocationSource
 
-class SearchFragment : BaseFragment<FragmentSearchBinding>(FragmentSearchBinding::bind,R.layout.fragment_search), OnMapReadyCallback, GetPostListView {
+class SearchFragment : BaseFragment<FragmentSearchBinding>(FragmentSearchBinding::bind,R.layout.fragment_search), OnMapReadyCallback, GetPostListView, PostedView {
 
     lateinit var mapViewSearch:MapView //레이아웃의 MapView와 연결
     private var naverMapSearch:NaverMap?=null //네이버 맵관련 기능 구현 용도
@@ -32,6 +41,9 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(FragmentSearchBinding
     private lateinit var cameraPos:CameraPosition
     //Post는 게시물 id,위치정보가 담긴 response model임.
     private lateinit var locationList:ArrayList<Post>
+    private var markerList:ArrayList<Marker> = arrayListOf()
+    private lateinit var postedDialog: PostedDialog
+
     fun newInstance(): Fragment {
         return SearchFragment()
     }
@@ -96,7 +108,9 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(FragmentSearchBinding
         super.onDestroyView()
         mapViewSearch.onDestroy()
     }
-    private fun setMark(marker: Marker, lat:Double, lng:Double, resourceId:Int){
+    private fun setMark(id:Int,marker: Marker, lat:Double, lng:Double, resourceId:Int){
+        //서버에서 받아온 게시물의 id를 tag에 넣음.
+        marker.tag = id
         //원근감 표시
         marker.isIconPerspectiveEnabled = true
         //아이콘 지정
@@ -107,23 +121,58 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(FragmentSearchBinding
         marker.position = LatLng(lat,lng)
         //마커 우선순위
         marker.zIndex = 10
-        marker.captionText = "asadgas"
+        //위에서 만든 마커를 markerList에 추가
+        markerList.add(marker)
         //마커 표시
         if(naverMapSearch!=null){
             marker.map = naverMapSearch
         }
     }
     override fun onGetPostListSuccess(response: GetPostListResonse) {
-        Log.d("게시물 목록","")
+        postedDialog = PostedDialog(context as MainActivity)
+
+        //새로고침하면 게시물 목록을 다시 받아오면서 map에서 marker를 지우고 markerList를 초기화
+        if(markerList.isNotEmpty()){
+            for(i in markerList){
+                i.map = null
+            }
+            markerList.clear()
+        }
+
         locationList = response.data.list
         for(i in locationList.iterator()){
             Log.d("${i.id}","${i.locationObj.lat}, ${i.locationObj.lng}")
         }
         for(i in locationList.iterator()){
-            setMark(Marker(),i.locationObj.lat.toDouble(),i.locationObj.lng.toDouble(),R.drawable.ar_map_marker_test)
+            setMark(i.id,Marker(),i.locationObj.lat.toDouble(),i.locationObj.lng.toDouble(),R.drawable.ar_map_marker_text_custom)
+        }
+
+        //각 marker에 리스너 설정
+        for (i in 0 until markerList.size) {
+            markerList[i].onClickListener = Overlay.OnClickListener {
+                showCustomToast("${markerList[i].tag }")
+
+
+
+
+                postedDialog.show()
+
+
+                PostedService(this).tryGetPosted(PostedRequest("getPostInfo",markerList[i].tag.toString()))
+                false
+            }
         }
     }
     override fun onGetPostListFailure(message: String) {
         Log.d("게시물 목록 요청 실패",message)
+    }
+
+    //tryGetPosted 호출 성공 시 PostedFragment로 화면 전환
+    //같은 상위 Activity를 갖고있는 Fragment들간의 데이터 공유방법 -> Fragment Result API 활용
+    override fun onPostedSuccess(response: PostedResponse) {
+        Log.d("게시물 정보 요청","성공")
+    }
+    override fun onPostedFailure(message: String) {
+        Log.d("게시물 정보 요청 실패",message)
     }
 }

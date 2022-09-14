@@ -5,9 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.setFragmentResult
 import com.example.smproject.R
 import com.example.smproject.config.ApplicationClass
 import com.example.smproject.config.BaseFragment
@@ -18,12 +16,12 @@ import com.example.smproject.src.main.getPostApi.GetPostListView
 import com.example.smproject.src.main.getPostApi.models.GetPostListRequest
 import com.example.smproject.src.main.getPostApi.models.GetPostListResonse
 import com.example.smproject.src.main.getPostApi.models.Post
-import com.example.smproject.src.main.posted.PostedFragment
 import com.example.smproject.src.main.posted.PostedService
 import com.example.smproject.src.main.posted.PostedView
 import com.example.smproject.src.main.posted.models.PostedRequest
 import com.example.smproject.src.main.posted.models.PostedResponse
 import com.example.smproject.util.CurrentLocation
+import com.example.smproject.util.PostedDialog
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.*
 import com.naver.maps.map.overlay.Marker
@@ -33,7 +31,7 @@ import com.naver.maps.map.util.FusedLocationSource
 import com.unity3d.player.UnityPlayerActivity
 
 
-class MyArFragment : BaseFragment<FragmentMyarBinding>(FragmentMyarBinding::bind,R.layout.fragment_myar), OnMapReadyCallback,GetPostListView,PostedView {
+class MyArFragment : BaseFragment<FragmentMyarBinding>(FragmentMyarBinding::bind,R.layout.fragment_myar), OnMapReadyCallback,GetPostListView {
     lateinit var mapViewAr: MapView //레이아웃의 MapView와 연결
     private lateinit var naverMapAr:NaverMap //네이버 맵관련 기능 구현 용도
     private var zoom = 16.2 //줌 레벨
@@ -41,7 +39,7 @@ class MyArFragment : BaseFragment<FragmentMyarBinding>(FragmentMyarBinding::bind
     private lateinit var locationSource:FusedLocationSource
     private val LOCATION_PERMISSION_REQUEST_CODE = 1000
     private lateinit var cameraPos: CameraPosition
-
+    private lateinit var postedDialog:PostedDialog
     //Post는 게시물 id,위치정보가 담긴 response model임.
     private lateinit var locationList:ArrayList<Post>
     //set된 Marker들을 모아놓은 MarkerList
@@ -140,15 +138,15 @@ class MyArFragment : BaseFragment<FragmentMyarBinding>(FragmentMyarBinding::bind
         marker.position = LatLng(lat,lng)
         //마커 우선순위
         marker.zIndex = 10
-
         //위에서 만든 마커를 markerList에 추가
         markerList.add(marker)
-
         //마커 표시
         marker.map = naverMapAr
     }
 
     override fun onGetPostListSuccess(response: GetPostListResonse) {
+        postedDialog = PostedDialog(context as MainActivity)
+
         //새로고침하면 게시물 목록을 다시 받아오면서 map에서 marker를 지우고 markerList를 초기화
         if(markerList.isNotEmpty()){
             for(i in markerList){
@@ -163,14 +161,17 @@ class MyArFragment : BaseFragment<FragmentMyarBinding>(FragmentMyarBinding::bind
             Log.d("${i.id}","${i.locationObj.lat}, ${i.locationObj.lng}")
         }
         for(i in locationList.iterator()){
-            setMark(i.id,Marker(),i.locationObj.lat.toDouble(),i.locationObj.lng.toDouble(),R.drawable.ar_map_marker_test)
+
+            setMark(i.id,Marker(),i.locationObj.lat.toDouble(),i.locationObj.lng.toDouble(),R.drawable.ar_map_marker_text_custom)
         }
 
         //각 marker에 리스너 설정
         for (i in 0 until markerList.size) {
             markerList[i].onClickListener = Overlay.OnClickListener {
                 showCustomToast("${markerList[i].tag }")
-                PostedService(this).tryGetPosted(PostedRequest("getPostInfo",markerList[i].tag.toString()))
+
+                ApplicationClass.postedId = markerList[i].tag.toString()
+                postedDialog.show()
                 false
             }
         }
@@ -179,23 +180,5 @@ class MyArFragment : BaseFragment<FragmentMyarBinding>(FragmentMyarBinding::bind
         Log.d("게시물 목록 요청 실패",message)
     }
 
-    //tryGetPosted 호출 성공 시 PostedFragment로 화면 전환
-    //같은 상위 Activity를 갖고있는 Fragment들간의 데이터 공유방법 -> Fragment Result API 활용
-    override fun onPostedSuccess(response: PostedResponse) {
 
-        val id = response.data.info.id.toString()
-        val content = response.data.info.content
-        //request키를 다르게 하면 여러개의 데이터를 줄 수 있다!!!!
-        setFragmentResult("idKey",bundleOf("bundleKey" to id))
-        setFragmentResult("contentKey",bundleOf("bundleKey" to content))
-
-        //Fragment에서 Activity의 함수 호출방법, replaceFragment로 다른 Fragment로의 화면 전환
-        (activity as MainActivity?)?.replaceFragment(PostedFragment())
-
-        Log.d("게시물 정보 요청","성공")
-    }
-    override fun onPostedFailure(message: String) {
-        Log.d("게시물 정보 요청 실패",message)
-
-    }
 }

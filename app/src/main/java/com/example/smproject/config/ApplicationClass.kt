@@ -22,6 +22,7 @@ class ApplicationClass: Application() {
         lateinit var sRetrofit: Retrofit
         var latitude:Double=0.0
         var longtidute:Double=0.0
+        var postedId:String = "" //Dialog에서 사용하기 위한 게시물 id
     }
     //앱 최초 생성 시에 sp를 새로만들어주고 레트로핏 인스턴스 생성
     override fun onCreate() {

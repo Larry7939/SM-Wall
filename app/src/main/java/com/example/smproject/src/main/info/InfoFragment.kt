@@ -55,33 +55,7 @@ class InfoFragment : BaseFragment<FragmentInfoBinding>(FragmentInfoBinding::bind
 
 
     }
-    private fun galleryPermission(context: Context){
-        // permissionLauncher 선언(권한 요청용)
-//        permissionLauncher = registerForActivityResult(
-//            RequestPermission()
-//        ) { isGranted: Boolean ->
-//            if (isGranted) {
-//                // 권한 있는 경우 실행할 코드...
-//            } else {
-//                AlertDialog.Builder(context)
-//                    .setTitle("미디어 접근 권한")
-//                    .setMessage("미디어를 첨부하시려면, 앱 접근 권한을 허용해 주세요.")
-//                    .setPositiveButton("확 인", DialogInterface.OnClickListener { dialog, which ->
-//                        val intent = Intent()
-//                        intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
-//                        val uri: Uri = Uri.fromParts(
-//                            "package",
-//                            BuildConfig.APPLICATION_ID, null
-//                        )
-//                        intent.data = uri
-//                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-//                        startActivity(intent)
-//                    })
-//                    .create()
-//                    .show()
-//            }
 
-    }
     private fun setProfileImage(context: Context){
         //launcher선언(앨범 열기용)
         launcher = registerForActivityResult(
