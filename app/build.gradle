@@ -82,7 +82,7 @@ dependencies {
 //    implementation 'com.google.maps.android:maps-utils-ktx:1.7.0'
 //    //ARCore
 //    implementation 'com.google.ar.sceneform.ux:sceneform-ux:1.15.0'
-    implementation project(':unityLibrary')
+
 
     //FragmentResult API를 사용한 Fragment간 데이터 통신
     def fragment_version = "1.3.0-alpha08"

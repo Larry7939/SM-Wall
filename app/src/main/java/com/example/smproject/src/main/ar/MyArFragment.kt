@@ -28,7 +28,7 @@ import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.Overlay
 import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.util.FusedLocationSource
-import com.unity3d.player.UnityPlayerActivity
+
 
 
 class MyArFragment : BaseFragment<FragmentMyarBinding>(FragmentMyarBinding::bind,R.layout.fragment_myar), OnMapReadyCallback,GetPostListView {
@@ -86,14 +86,6 @@ class MyArFragment : BaseFragment<FragmentMyarBinding>(FragmentMyarBinding::bind
             binding.arCamBtn.visibility = View.VISIBLE
             binding.arMapBtn.visibility = View.GONE
         }
-
-        //cam버튼 누르면 unity실행
-        binding.arCamBtn.setOnClickListener {
-            binding.arMapBtn.visibility = View.VISIBLE
-            binding.arCamBtn.visibility = View.GONE
-            startActivity(Intent(activity, UnityPlayerActivity::class.java))
-        }
-
     }
     override fun onMapReady(p1: NaverMap) {
         CurrentLocation(requireContext()).returnLocation()
@@ -171,6 +163,7 @@ class MyArFragment : BaseFragment<FragmentMyarBinding>(FragmentMyarBinding::bind
                 showCustomToast("${markerList[i].tag }")
 
                 ApplicationClass.postedId = markerList[i].tag.toString()
+                postedDialog.create()
                 postedDialog.show()
                 false
             }

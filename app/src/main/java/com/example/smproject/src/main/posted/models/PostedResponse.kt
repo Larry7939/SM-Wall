@@ -13,7 +13,7 @@ data class Info(
     val content: String,
     val hashtag: String,
     val id: Int,
-    val imageUrlList: Any,
+    val imageUrlList: ArrayList<String>?,
     val isPrivate: Boolean,
     val locationObj: LocationObj,
     val userObj: UserObj

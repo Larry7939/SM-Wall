@@ -19,9 +19,7 @@ allprojects {
         google()
         jcenter() // Warning: this repository is going to shut down soon
         maven {url 'https://naver.jfrog.io/artifactory/maven/'} //네이버 지도 관련
-        flatDir {
-            dirs "${project(':unityLibrary').projectDir}/libs"
-        }
+
 
     }
 }

@@ -15,7 +15,7 @@ class PostPostingService(val view:PostFragmentPostingView) {
             override fun onResponse(call: Call<PostPostingResponse>, response: Response<PostPostingResponse>)
             {
                 Log.d("바디","${response.isSuccessful()}")
-                Log.d("Success","-----통신성공-----")
+                Log.d("Success","-----포스팅 통신성공-----")
                 Log.d("code",response.code().toString())
 
                 view.onPostPostingSuccess(response.body() as PostPostingResponse)
@@ -23,9 +23,8 @@ class PostPostingService(val view:PostFragmentPostingView) {
             override fun onFailure(call: Call<PostPostingResponse>, t: Throwable)
             {
                 view.onPostPostingFailure(t.message?:"통신 오류")
-                Log.d("Fail","-----통신실패-----")
+                Log.d("Fail","-----포스팅 통신실패-----")
             }
-
         }
 
         )

@@ -46,20 +46,7 @@
         <activity
             android:name=".src.login.idsignin.IdSignin"
             android:exported="true" /> <!-- // 갤러리의 이미지를 다루기 위해서 필요 -->
-        <activity android:name="com.unity3d.player.UnityPlayerActivity"
-            android:theme="@style/UnityThemeSelector"
-            android:screenOrientation="fullUser"
-            android:launchMode="singleTask"
-            android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|uiMode|screenSize|smallestScreenSize|fontScale|layoutDirection|density"
-            android:resizeableActivity="false"
-            android:hardwareAccelerated="false"
 
-            android:process=":UnityKillsMe"
-            >
-
-            <meta-data android:name="unityplayer.UnityActivity" android:value="true" />
-            <meta-data android:name="android.notch_support" android:value="true" />
-        </activity>
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.example.smproject"
