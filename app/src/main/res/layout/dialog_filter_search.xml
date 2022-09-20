@@ -17,6 +17,19 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:background="@drawable/posted_dialog_border">
     </androidx.appcompat.widget.AppCompatImageView>
+    <androidx.appcompat.widget.AppCompatTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@id/search_dialog_background"
+        app:layout_constraintStart_toStartOf="@id/search_dialog_background"
+        app:layout_constraintEnd_toEndOf="@id/search_dialog_background"
+        android:layout_marginTop="50dp"
+        android:text="게시물 기간 필터"
+        android:textSize="25sp"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        >
+    </androidx.appcompat.widget.AppCompatTextView>
     <SeekBar
         android:id="@+id/search_dialog_seekbar"
         android:layout_width="350dp"
@@ -31,4 +44,17 @@
         app:layout_constraintEnd_toEndOf="@id/search_dialog_background"
         android:layout_centerHorizontal="true"
         tools:ignore="MissingConstraints" />
+    <androidx.appcompat.widget.AppCompatTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@id/search_dialog_background"
+        app:layout_constraintStart_toStartOf="@id/search_dialog_background"
+        app:layout_constraintEnd_toEndOf="@id/search_dialog_background"
+        android:layout_marginBottom="50dp"
+        android:text="기간을 설정하고 새로고침 버튼을 누르면 반영됩니다."
+        android:textSize="13sp"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        >
+    </androidx.appcompat.widget.AppCompatTextView>
 </androidx.constraintlayout.widget.ConstraintLayout>

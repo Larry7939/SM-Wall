@@ -50,7 +50,11 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(FragmentSearchBinding
     private var markerList:ArrayList<Marker> = arrayListOf()
     private lateinit var postedDialog: PostedDialog
     private lateinit var searchFilterDialog: SearchFilterDialog
-
+    companion object{
+        private var instance:SearchFragment? = null
+        fun getInstance(): SearchFragment? { return instance        }
+        var searchDays:Int = 10
+    }
 
     fun newInstance(): Fragment {
         return SearchFragment()
@@ -65,6 +69,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(FragmentSearchBinding
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        Toast.makeText(context,"${searchDays}일 내에 작성된 게시물을 표시합니다.", Toast.LENGTH_SHORT).show()
 
         locationSource = FusedLocationSource(this,LOCATION_PERMISSION_REQUEST_CODE) //현재 위치 나타내기 위한 locationSource
         searchFilterDialog = SearchFilterDialog(context as MainActivity)
@@ -74,11 +79,11 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(FragmentSearchBinding
             //게시물 목록 API
             if(binding.searchBoxMy.isChecked){
                 //클릭 한 결과 박스가 체크되어있으면, 내 게시물만 받아온다.(userCreatedPost가 1인 것) isPrivate은 상관없음.
-                GetPostListService(this).tryGetPostList(GetPostListRequest("getPostList",null,null,null,1,null))
+                GetPostListService(this).tryGetPostList(GetPostListRequest("getPostList",searchDays,null,null,1,null))
             }
             else{
                 //전체공개(isPrivate 비공개 여부가 0인 것들만! userCreatedPost는 상관없음.
-                GetPostListService(this).tryGetPostList(GetPostListRequest("getPostList",null,null,null,null,0))
+                GetPostListService(this).tryGetPostList(GetPostListRequest("getPostList",searchDays,null,null,null,0))
             }
             showCustomToast("게시물 새로고침 완료")
 
@@ -96,11 +101,11 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(FragmentSearchBinding
 
         if(binding.searchBoxMy.isChecked){
             //클릭 한 결과 박스가 체크되어있으면, 내 게시물만 받아온다.(userCreatedPost가 1인 것) isPrivate은 상관없음.
-            GetPostListService(this).tryGetPostList(GetPostListRequest("getPostList",null,null,null,1,null))
+            GetPostListService(this).tryGetPostList(GetPostListRequest("getPostList",searchDays,null,null,1,null))
         }
         else{
             //전체공개(isPrivate 비공개 여부가 0인 것들만! userCreatedPost는 상관없음.
-            GetPostListService(this).tryGetPostList(GetPostListRequest("getPostList",null,null,null,null,0))
+            GetPostListService(this).tryGetPostList(GetPostListRequest("getPostList",searchDays,null,null,null,0))
         }
         checkBoxMy()
         searchPost()
@@ -125,7 +130,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(FragmentSearchBinding
         naverMapSearch!!.locationSource = locationSource //현재위치 표시
         naverMapSearch!!.locationTrackingMode = LocationTrackingMode.Follow
         //게시물 목록 API
-        GetPostListService(this).tryGetPostList(GetPostListRequest("getPostList",null,null,null,null,null))
+        GetPostListService(this).tryGetPostList(GetPostListRequest("getPostList",searchDays,null,null,null,null))
     }
     //MapView를 Fragment에서 사용할 때에는 생명주기에 맞춰 각각 onViewCreated와 onDestroy에서 super함수를 호출해줘야한다.
     override fun onResume() {
@@ -188,7 +193,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(FragmentSearchBinding
         //각 marker에 리스너 설정
         for (i in 0 until markerList.size) {
             markerList[i].onClickListener = Overlay.OnClickListener {
-                showCustomToast("${markerList[i].tag }")
+//                showCustomToast("${markerList[i].tag }")
 
                 ApplicationClass.postedId = markerList[i].tag.toString()
                 postedDialog.create()
@@ -225,11 +230,11 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(FragmentSearchBinding
         binding.searchBoxMy.setOnClickListener {
             if(binding.searchBoxMy.isChecked){
                 //클릭 한 결과 박스가 체크되어있으면, 내 게시물만 받아온다.(userCreatedPost가 1인 것) isPrivate은 상관없음.
-                GetPostListService(this).tryGetPostList(GetPostListRequest("getPostList",null,null,null,1,null))
+                GetPostListService(this).tryGetPostList(GetPostListRequest("getPostList",searchDays,null,null,1,null))
             }
             else{
                 //전체공개(isPrivate 비공개 여부가 0인 것들만! userCreatedPost는 상관없음.
-                GetPostListService(this).tryGetPostList(GetPostListRequest("getPostList",null,null,null,null,null))
+                GetPostListService(this).tryGetPostList(GetPostListRequest("getPostList",searchDays,null,null,null,null))
             }
         }
     }
@@ -240,11 +245,11 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(FragmentSearchBinding
             showCustomToast("검색 완료")
             val keyword = binding.searchInputEt.text.toString()
             if(binding.searchBoxMy.isChecked) {
-                GetPostListService(this).tryGetPostList(GetPostListRequest("getPostList", null, keyword, null, 1, null))
+                GetPostListService(this).tryGetPostList(GetPostListRequest("getPostList", searchDays, keyword, null, 1, null))
             }
             //전체공개로 되어있는 게시물만 검색
             else{
-                GetPostListService(this).tryGetPostList(GetPostListRequest("getPostList", null, keyword, null, null, 0))
+                GetPostListService(this).tryGetPostList(GetPostListRequest("getPostList", searchDays, keyword, null, null, 0))
             }
             //검색이 끝나면 검색창의 텍스트 clear
             binding.searchInputEt.text?.clear()
@@ -254,11 +259,11 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(FragmentSearchBinding
             if (event.keyCode == KeyEvent.KEYCODE_ENTER){
                 val keyword = binding.searchInputEt.text.toString()
                 if(binding.searchBoxMy.isChecked) {
-                    GetPostListService(this).tryGetPostList(GetPostListRequest("getPostList", null, keyword, null, 1, null))
+                    GetPostListService(this).tryGetPostList(GetPostListRequest("getPostList", searchDays, keyword, null, 1, null))
                 }
                 //전체공개로 되어있는 게시물만 검색
                 else{
-                    GetPostListService(this).tryGetPostList(GetPostListRequest("getPostList", null, keyword, null, null, 0))
+                    GetPostListService(this).tryGetPostList(GetPostListRequest("getPostList", searchDays, keyword, null, null, 0))
                 }
                 //검색이 끝나면 검색창의 텍스트 clear
                 binding.searchInputEt.text?.clear()
@@ -273,6 +278,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(FragmentSearchBinding
 
     //기간 설정
     fun searchDays(days:Int){
+        showCustomToast("${days}일 내에 작성된 게시물을 표시합니다.")
         if(binding.searchBoxMy.isChecked) {
             GetPostListService(this).tryGetPostList(GetPostListRequest("getPostList", days, null, null, 1, null))
         }

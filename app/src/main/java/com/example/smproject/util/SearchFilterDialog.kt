@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Bundle
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
+import android.widget.Toast
 import com.example.smproject.config.ApplicationClass
 import com.example.smproject.databinding.DialogFilterSearchBinding
 import com.example.smproject.src.main.MainActivity
@@ -18,7 +19,9 @@ class SearchFilterDialog(context: Context) :Dialog(context){
 
     private lateinit var binding:DialogFilterSearchBinding
     private val editor = ApplicationClass.sSharedPreferences.edit()
-    private var activity = context as MainActivity
+    private var searchFilter = SearchFragment.getInstance()
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DialogFilterSearchBinding.inflate(layoutInflater)
@@ -50,8 +53,10 @@ class SearchFilterDialog(context: Context) :Dialog(context){
     }
     //SearchFragment의 search Days함수 호출
     fun loadList(days:Int){
-
-
+        Toast.makeText(context,"${days}일 내에 작성된 게시물을 표시합니다.", Toast.LENGTH_SHORT).show()
+        SearchFragment.searchDays = days
+//        Toast.makeText(context, "필터 호출됨", Toast.LENGTH_SHORT).show()
+//        searchFilter?.searchDays(days)
     }
 
 
