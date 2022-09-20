@@ -18,7 +18,7 @@ import androidx.activity.result.contract.ActivityResultContracts.StartActivityFo
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
-import com.example.smproject.BuildConfig
+//import com.example.smproject.BuildConfig
 import com.example.smproject.R
 import com.example.smproject.config.ApplicationClass
 import com.example.smproject.config.BaseFragment
@@ -28,16 +28,21 @@ import com.example.smproject.src.main.info.models.InfoChangeImgRequest
 import com.example.smproject.src.main.info.models.InfoChangeImgResponse
 import com.example.smproject.src.main.info.models.InfoLoadRequest
 import com.example.smproject.src.main.info.models.InfoLoadResponse
+import com.example.smproject.src.main.posted.PostedService
+import com.example.smproject.src.main.posted.models.PostedRequest
+import com.example.smproject.src.main.posted.models.PostedResponse
 import com.example.smproject.util.BitmapConverter
 import com.example.smproject.util.LogoutDialog
 
 
 class InfoFragment : BaseFragment<FragmentInfoBinding>(FragmentInfoBinding::bind,R.layout.fragment_info),InfoFragmentLoadView,InfoFragmentChangeImgView {
-    lateinit var logoutDialog:LogoutDialog
-    private lateinit var permissionLauncher:ActivityResultLauncher<String>
+    lateinit var logoutDialog: LogoutDialog
+    private lateinit var permissionLauncher: ActivityResultLauncher<String>
     private lateinit var launcher: ActivityResultLauncher<Intent>
-    private lateinit var profileImageBase64:String
+    private lateinit var profileImageBase64: String
     private var bitmapConverter = BitmapConverter()
+    lateinit var infoPostActivity: InfoPostActivity
+
     fun newInstance(): Fragment {
         return InfoFragment()
     }
@@ -51,12 +56,12 @@ class InfoFragment : BaseFragment<FragmentInfoBinding>(FragmentInfoBinding::bind
         loadProfileImage() //프로필 가져오기
         context?.let { setProfileImage(it) } //갤러리에서 가져오기
         logOut() //로그아웃
-
+        postManage() // 게시물 관리
 
 
     }
 
-    private fun setProfileImage(context: Context){
+    private fun setProfileImage(context: Context) {
         //launcher선언(앨범 열기용)
         launcher = registerForActivityResult(
             StartActivityForResult()
@@ -69,7 +74,7 @@ class InfoFragment : BaseFragment<FragmentInfoBinding>(FragmentInfoBinding::bind
                     .load(uri)
                     .into(binding.infoProfile)
                 //Uri -> Bitmap -> Base64인코딩
-                profileImageBase64 = bitmapConverter.uriToBase64(context,uri!!)
+                profileImageBase64 = bitmapConverter.uriToBase64(context, uri!!)
                 //tryPost함수 호출
                 changeProfileImg(profileImageBase64)
             }
@@ -81,12 +86,12 @@ class InfoFragment : BaseFragment<FragmentInfoBinding>(FragmentInfoBinding::bind
 //                    android.Manifest.permission.READ_EXTERNAL_STORAGE
 //                ) == PackageManager.PERMISSION_GRANTED
 //            ) {
-                // 권한 있는 경우 실행할 코드...
-                // launcher를 이용해서 갤러리에 요청 보내고 갤러리 실행시키기
-                val intent = Intent()
-                intent.type = "image/*"
-                intent.action = Intent.ACTION_GET_CONTENT
-                launcher.launch(intent)
+            // 권한 있는 경우 실행할 코드...
+            // launcher를 이용해서 갤러리에 요청 보내고 갤러리 실행시키기
+            val intent = Intent()
+            intent.type = "image/*"
+            intent.action = Intent.ACTION_GET_CONTENT
+            launcher.launch(intent)
 //        }
 //            else {
 //                // 권한 없는 경우, 권한 요청
@@ -94,48 +99,74 @@ class InfoFragment : BaseFragment<FragmentInfoBinding>(FragmentInfoBinding::bind
 //            }
         }
     }
-    private fun logOut(){
+
+    private fun logOut() {
         //로그아웃 버튼을 누르면 sp내부의 토큰을 삭제
         logoutDialog = LogoutDialog(context as MainActivity)
         binding.infoLogout.setOnClickListener {
             logoutDialog.show()
         }
     }
+
     //프로필 load
-    private fun loadProfileImage(){
+    private fun loadProfileImage() {
         //프로필 가져오기(사진,별명,id)
-        Log.d("발신 AccessToken","${ApplicationClass.sSharedPreferences.getString(ApplicationClass.X_ACCESS_TOKEN,null)}")
+        Log.d(
+            "발신 AccessToken",
+            "${
+                ApplicationClass.sSharedPreferences.getString(
+                    ApplicationClass.X_ACCESS_TOKEN,
+                    null
+                )
+            }"
+        )
         InfoLoadService(this).tryPostInfoLoad(InfoLoadRequest("getUserInfo"))
     }
+
     override fun onPostInfoLoadSuccess(response: InfoLoadResponse) {
-        if(response.data.result){
-            Log.d("이미지 로드 성공 여부 - ","성공")
-            if(response.data.info.imageUrl!=null){ //이미 업로드해놓은 이미지가 존재하는 경우에는 프로필에 이미지 set
-                Glide.with(this).asBitmap().load(response.data.info.imageUrl.toString()).into(binding.infoProfile)
-            }
-            else{
+        if (response.data.result) {
+            Log.d("이미지 로드 성공 여부 - ", "성공")
+            if (response.data.info.imageUrl != null) { //이미 업로드해놓은 이미지가 존재하는 경우에는 프로필에 이미지 set
+                Glide.with(this).asBitmap().load(response.data.info.imageUrl.toString())
+                    .into(binding.infoProfile)
+            } else {
                 binding.infoProfile.setImageResource(R.drawable.info_profile)
             }
             //닉네임 set
             binding.infoNickname.text = response.data.info.nickname
         }
     }
+
     override fun onPostInfoLoadFailure(message: String) {
-        Log.d("프로필 load 통신오류","$message")
+        Log.d("프로필 load 통신오류", "$message")
     }
 
     //프로필 수정
-    private fun changeProfileImg(profileBase64:String){
-        InfoChangeImgService(this).tryPostInfoChangeImg(InfoChangeImgRequest("updateUserImage",
-            "data:image/png;base64,$profileBase64"))
-        }
+    private fun changeProfileImg(profileBase64: String) {
+        InfoChangeImgService(this).tryPostInfoChangeImg(
+            InfoChangeImgRequest(
+                "updateUserImage",
+                "data:image/png;base64,$profileBase64"
+            )
+        )
+    }
 
     override fun onPostInfoChangeImgSuccess(response: InfoChangeImgResponse) {
-        if(response.data.result){
-            Log.d("이미지 수정 성공 여부 - ","성공")
+        if (response.data.result) {
+            Log.d("이미지 수정 성공 여부 - ", "성공")
         }
     }
+
     override fun onPostInfoChangeImgFailure(message: String) {
-        Log.d("프로필 수정 통신오류","$message")
+        Log.d("프로필 수정 통신오류", "$message")
+    }
+
+    //게시물관리
+    private fun postManage() {
+        //버튼을누르면자신의게시물목록출력
+        infoPostActivity = InfoPostActivity()
+        binding.infoPost.setOnClickListener {
+            startActivity(Intent(activity, InfoPostActivity::class.java))
+        }
     }
 }
