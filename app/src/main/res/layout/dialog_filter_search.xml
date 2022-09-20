@@ -24,6 +24,7 @@
         android:thumb="@drawable/search_seekbar_thumb_custom"
         android:progressDrawable="@drawable/search_seekbar_custom"
         android:max="100"
+        android:progress="10"
         app:layout_constraintTop_toTopOf="@id/search_dialog_background"
         app:layout_constraintBottom_toBottomOf="@id/search_dialog_background"
         app:layout_constraintStart_toStartOf="@id/search_dialog_background"

@@ -11,7 +11,10 @@ data class Data(
 )
 data class Post(
     val id: Int,
-    val locationObj: LocationObj
+    val locationObj: LocationObj,
+    val withImage: Boolean,
+    val userCreatedPost:Boolean,
+    val isPrivate:Boolean
 )
 data class LocationObj(
     val lat: String,

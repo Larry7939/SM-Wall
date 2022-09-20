@@ -94,7 +94,6 @@ class MyArFragment : BaseFragment<FragmentMyarBinding>(FragmentMyarBinding::bind
             binding.arMapBtn.visibility = View.VISIBLE
             binding.arCamBtn.visibility = View.GONE
             startActivity(Intent(activity, HelloGeoActivity::class.java))
-            //startActivity(Intent(activity, UnityPlayerActivity::class.java))
         }
 
 
@@ -113,7 +112,7 @@ class MyArFragment : BaseFragment<FragmentMyarBinding>(FragmentMyarBinding::bind
         naverMapAr.locationSource = locationSource //현재위치 표시
         naverMapAr.locationTrackingMode = LocationTrackingMode.Follow
         //게시물 목록 API
-        GetPostListService(this).tryGetPostList(GetPostListRequest("getPostList",null,null,null,null,null))
+        GetPostListService(this).tryGetPostList(GetPostListRequest("getPostList",null,null,null,null,0))
 
 
     }
@@ -152,38 +151,63 @@ class MyArFragment : BaseFragment<FragmentMyarBinding>(FragmentMyarBinding::bind
         postedDialog = PostedDialog(context as MainActivity)
 
         //새로고침하면 게시물 목록을 다시 받아오면서 map에서 marker를 지우고 markerList를 초기화
-        if(markerList.isNotEmpty()){
-            for(i in markerList){
+        if (markerList.isNotEmpty()) {
+            for (i in markerList) {
                 i.map = null
             }
             markerList.clear()
         }
 
-        Log.d("게시물 목록","")
+        Log.d("게시물 목록", "")
         locationList = response.data.list
-        for(i in locationList.iterator()){
-            Log.d("${i.id}","${i.locationObj.lat}, ${i.locationObj.lng}")
-        }
-        for(i in locationList.iterator()){
+//        for(i in locationList.iterator()){
+//            Log.d("${i.id}","${i.locationObj.lat}, ${i.locationObj.lng}")
+//        }
+        for (i in locationList.iterator()) {
+            if (i.withImage) {
+                setMark(
+                    i.id,
+                    Marker(),
+                    i.locationObj.lat.toDouble(),
+                    i.locationObj.lng.toDouble(),
+                    R.drawable.ar_map_marker_text_custom
+                )
+            } else if (!i.withImage) {
+                setMark(
+                    i.id,
+                    Marker(),
+                    i.locationObj.lat.toDouble(),
+                    i.locationObj.lng.toDouble(),
+                    R.drawable.ar_map_marker_photo_custom
+                )
+            }
 
-            setMark(i.id,Marker(),i.locationObj.lat.toDouble(),i.locationObj.lng.toDouble(),R.drawable.ar_map_marker_text_custom)
-        }
+            //각 marker에 리스너 설정
+            for (i in 0 until markerList.size) {
+                markerList[i].onClickListener = Overlay.OnClickListener {
+                    showCustomToast("${markerList[i].tag}")
 
-        //각 marker에 리스너 설정
-        for (i in 0 until markerList.size) {
-            markerList[i].onClickListener = Overlay.OnClickListener {
-                showCustomToast("${markerList[i].tag }")
+                    ApplicationClass.postedId = markerList[i].tag.toString()
+                    postedDialog.create()
+                    postedDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                    postedDialog.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
 
-                ApplicationClass.postedId = markerList[i].tag.toString()
-                postedDialog.create()
-                postedDialog.show()
-                false
+                    //        동작은 되지만 꺼질 때의 애니메이션이 미작동
+                    (postedDialog.window!!.decorView as ViewGroup)
+                        .getChildAt(0).startAnimation(
+                            AnimationUtils.loadAnimation(
+                                context, R.anim.open
+                            )
+                        )
+
+                    postedDialog.show()
+                    false
+                }
             }
         }
     }
     override fun onGetPostListFailure(message: String) {
         Log.d("게시물 목록 요청 실패",message)
     }
-
 
 }

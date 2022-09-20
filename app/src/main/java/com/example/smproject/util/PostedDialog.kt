@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.example.smproject.R
 import com.example.smproject.config.ApplicationClass
@@ -20,14 +21,13 @@ import com.example.smproject.src.main.posted.models.PostedRequest
 import com.example.smproject.src.main.posted.models.PostedResponse
 
 
-class PostedDialog(context: Context) : Dialog(context), PostedView,InfoFragmentLoadView  {
+class PostedDialog(context: Context) : Dialog(context), PostedView  {
     private lateinit var binding: DialogPostedBinding
     private var hashTag: String =""
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DialogPostedBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        InfoLoadService(this).tryPostInfoLoad(InfoLoadRequest("getUserInfo"))
     }
 
     override fun create() {
@@ -38,28 +38,28 @@ class PostedDialog(context: Context) : Dialog(context), PostedView,InfoFragmentL
     override fun show() {
         super.show()
     }
-
     override fun dismiss() {
         super.dismiss()
 
     }
-    override fun onPostInfoLoadSuccess(response: InfoLoadResponse) {
-        Log.d("개인 정보 요청","성공")
-        binding.postedProfileNickname.text = response.data.info.nickname
-        if(response.data.info.imageUrl!=null){ //이미 업로드해놓은 이미지가 존재하는 경우에는 프로필에 이미지 set
-            Glide.with(context).asBitmap().load(response.data.info.imageUrl.toString()).into(binding.postedProfileImg)
+    override fun onPostedSuccess(response: PostedResponse) {
+        Log.d("게시물 정보 요청","성공")
+
+        //게시자 정보(닉네임, 프사)
+        if(response.data.info.userObj.nickname != null){
+            binding.postedProfileNickname.text = response.data.info.userObj.nickname
+        }
+        else{
+            binding.postedProfileNickname.text = "nickname"
+        }
+
+        if(response.data.info.userObj.imageUrl!=null){ //이미 업로드해놓은 이미지가 존재하는 경우에는 프로필에 이미지 set
+            Glide.with(context).asBitmap().load(response.data.info.userObj.imageUrl.toString()).into(binding.postedProfileImg)
         }
         else{
             binding.postedProfileImg.setImageResource(R.drawable.info_profile)
         }
-    }
 
-    override fun onPostInfoLoadFailure(message: String) {
-        Log.d("개인 정보 요청","실패")
-    }
-
-    override fun onPostedSuccess(response: PostedResponse) {
-        Log.d("게시물 정보 요청","성공")
         //게시물 이미지
         if(response.data.info.imageUrlList!=null){
             if((response.data.info.imageUrlList).size==1){
@@ -72,6 +72,8 @@ class PostedDialog(context: Context) : Dialog(context), PostedView,InfoFragmentL
                 Glide.with(context).asBitmap().load(response.data.info.imageUrlList[0]).into(binding.postedContentImg2)
                 Glide.with(context).asBitmap().load(response.data.info.imageUrlList[1]).into(binding.postedContentImg3)
             }
+
+
             //게시물 내용
             binding.postedContentTextText.visibility = View.INVISIBLE
             binding.postedContentTextImg.visibility = View.VISIBLE

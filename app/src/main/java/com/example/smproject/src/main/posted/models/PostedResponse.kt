@@ -23,6 +23,7 @@ data class LocationObj(
     val lng: String
 )
 data class UserObj(
-    val id: String,
-    val nickname: String
+    val id: String?,
+    val nickname: String?="사용자 닉네임",
+    val imageUrl:String?
 )

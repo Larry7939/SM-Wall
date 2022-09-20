@@ -5,13 +5,14 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
+import android.view.KeyEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.view.animation.AnimationUtils
-import androidx.core.os.bundleOf
-import androidx.fragment.app.setFragmentResult
+import android.view.inputmethod.EditorInfo
+import android.widget.Toast
+import androidx.fragment.app.Fragment
 import com.example.smproject.R
 import com.example.smproject.config.ApplicationClass
 import com.example.smproject.config.BaseFragment
@@ -22,9 +23,7 @@ import com.example.smproject.src.main.getPostApi.GetPostListView
 import com.example.smproject.src.main.getPostApi.models.GetPostListRequest
 import com.example.smproject.src.main.getPostApi.models.GetPostListResonse
 import com.example.smproject.src.main.getPostApi.models.Post
-import com.example.smproject.src.main.posted.PostedService
 import com.example.smproject.src.main.posted.PostedView
-import com.example.smproject.src.main.posted.models.PostedRequest
 import com.example.smproject.src.main.posted.models.PostedResponse
 import com.example.smproject.util.CurrentLocation
 import com.example.smproject.util.PostedDialog
@@ -35,6 +34,7 @@ import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.Overlay
 import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.util.FusedLocationSource
+
 
 class SearchFragment : BaseFragment<FragmentSearchBinding>(FragmentSearchBinding::bind,R.layout.fragment_search), OnMapReadyCallback, GetPostListView, PostedView {
 
@@ -50,6 +50,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(FragmentSearchBinding
     private var markerList:ArrayList<Marker> = arrayListOf()
     private lateinit var postedDialog: PostedDialog
     private lateinit var searchFilterDialog: SearchFilterDialog
+
 
     fun newInstance(): Fragment {
         return SearchFragment()
@@ -103,9 +104,13 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(FragmentSearchBinding
         }
         checkBoxMy()
         searchPost()
-        searchDays()
-
-
+        //검색 필터버튼 -> 다이얼로그
+        binding.searchFilter.setOnClickListener {
+            searchFilterDialog.create()
+            searchFilterDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            searchFilterDialog.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+            searchFilterDialog.show()
+        }
     }
     override fun onMapReady(p0: NaverMap) {
         naverMapSearch = p0
@@ -168,14 +173,18 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(FragmentSearchBinding
 
         Log.d("게시물 목록","")
         locationList = response.data.list
+//        for(i in locationList.iterator()){
+//            Log.d("${i.id}","${i.locationObj.lat}, ${i.locationObj.lng}")
+//        }
         for(i in locationList.iterator()){
-            Log.d("${i.id}","${i.locationObj.lat}, ${i.locationObj.lng}")
-        }
-        for(i in locationList.iterator()){
+            if(i.withImage){
+                setMark(i.id,Marker(),i.locationObj.lat.toDouble(),i.locationObj.lng.toDouble(),R.drawable.ar_map_marker_text_custom)
+            }
+            else if(!i.withImage){
+                setMark(i.id,Marker(),i.locationObj.lat.toDouble(),i.locationObj.lng.toDouble(),R.drawable.ar_map_marker_photo_custom)
+            }
 
-            setMark(i.id,Marker(),i.locationObj.lat.toDouble(),i.locationObj.lng.toDouble(),R.drawable.ar_map_marker_text_custom)
         }
-
         //각 marker에 리스너 설정
         for (i in 0 until markerList.size) {
             markerList[i].onClickListener = Overlay.OnClickListener {
@@ -193,8 +202,6 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(FragmentSearchBinding
                             context, R.anim.open
                         )
                     )
-
-
                 postedDialog.show()
                 false
             }
@@ -230,27 +237,49 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(FragmentSearchBinding
     private fun searchPost(){
         //keyword(#이 붙어 있으면 해시태그에서만 검색, #이 붙지 않으면 내용과 해시태그에서 검색)
         binding.searchInputIv.setOnClickListener {
-            showCustomToast("돋보기 누름")
+            showCustomToast("검색 완료")
             val keyword = binding.searchInputEt.text.toString()
             if(binding.searchBoxMy.isChecked) {
                 GetPostListService(this).tryGetPostList(GetPostListRequest("getPostList", null, keyword, null, 1, null))
             }
+            //전체공개로 되어있는 게시물만 검색
             else{
-                GetPostListService(this).tryGetPostList(GetPostListRequest("getPostList", null, keyword, null, null, null))
+                GetPostListService(this).tryGetPostList(GetPostListRequest("getPostList", null, keyword, null, null, 0))
             }
             //검색이 끝나면 검색창의 텍스트 clear
             binding.searchInputEt.text?.clear()
-//            GetPostListService(this).tryGetPostList(GetPostListRequest("getPostList"))
         }
+        binding.searchInputEt.setOnEditorActionListener{textView,action,event ->
+            var handled = false
+            if (event.keyCode == KeyEvent.KEYCODE_ENTER){
+                val keyword = binding.searchInputEt.text.toString()
+                if(binding.searchBoxMy.isChecked) {
+                    GetPostListService(this).tryGetPostList(GetPostListRequest("getPostList", null, keyword, null, 1, null))
+                }
+                //전체공개로 되어있는 게시물만 검색
+                else{
+                    GetPostListService(this).tryGetPostList(GetPostListRequest("getPostList", null, keyword, null, null, 0))
+                }
+                //검색이 끝나면 검색창의 텍스트 clear
+                binding.searchInputEt.text?.clear()
+                showCustomToast("검색 완료")
+                handled = true
+            }
+            handled
+        }
+
+
     }
 
     //기간 설정
-    private fun searchDays(){
-        binding.searchFilter.setOnClickListener {
-            searchFilterDialog.create()
-            searchFilterDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-            searchFilterDialog.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
-            searchFilterDialog.show()
+    fun searchDays(days:Int){
+        if(binding.searchBoxMy.isChecked) {
+            GetPostListService(this).tryGetPostList(GetPostListRequest("getPostList", days, null, null, 1, null))
+        }
+        else{
+            GetPostListService(this).tryGetPostList(GetPostListRequest("getPostList", days, null, null, null, 0))
         }
     }
+
+
 }
