@@ -1,10 +1,15 @@
 package com.example.smproject.src.main.search
 
 import android.content.Context
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.View
+import android.view.ViewGroup
+import android.view.WindowManager
+import android.view.animation.AnimationUtils
 import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
 import com.example.smproject.R
@@ -23,6 +28,7 @@ import com.example.smproject.src.main.posted.models.PostedRequest
 import com.example.smproject.src.main.posted.models.PostedResponse
 import com.example.smproject.util.CurrentLocation
 import com.example.smproject.util.PostedDialog
+import com.example.smproject.util.SearchFilterDialog
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.*
 import com.naver.maps.map.overlay.Marker
@@ -43,6 +49,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(FragmentSearchBinding
     private lateinit var locationList:ArrayList<Post>
     private var markerList:ArrayList<Marker> = arrayListOf()
     private lateinit var postedDialog: PostedDialog
+    private lateinit var searchFilterDialog: SearchFilterDialog
 
     fun newInstance(): Fragment {
         return SearchFragment()
@@ -59,12 +66,21 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(FragmentSearchBinding
         super.onViewCreated(view, savedInstanceState)
 
         locationSource = FusedLocationSource(this,LOCATION_PERMISSION_REQUEST_CODE) //현재 위치 나타내기 위한 locationSource
+        searchFilterDialog = SearchFilterDialog(context as MainActivity)
 
         //새로고침버튼을 누르면 게시물을 받아옴.
         binding.searchFabRefresh.setOnClickListener{
             //게시물 목록 API
+            if(binding.searchBoxMy.isChecked){
+                //클릭 한 결과 박스가 체크되어있으면, 내 게시물만 받아온다.(userCreatedPost가 1인 것) isPrivate은 상관없음.
+                GetPostListService(this).tryGetPostList(GetPostListRequest("getPostList",null,null,null,1,null))
+            }
+            else{
+                //전체공개(isPrivate 비공개 여부가 0인 것들만! userCreatedPost는 상관없음.
+                GetPostListService(this).tryGetPostList(GetPostListRequest("getPostList",null,null,null,null,0))
+            }
             showCustomToast("게시물 새로고침 완료")
-            GetPostListService(this).tryGetPostList(GetPostListRequest("getPostList"))
+
         }
         //현위치 추적버튼을 누르면 현위치 갱신 및 지도 위치 변경
         binding.searchFabTracking.setOnClickListener {
@@ -77,9 +93,20 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(FragmentSearchBinding
         mapViewSearch.onCreate(savedInstanceState)
         mapViewSearch.getMapAsync(this)
 
-        GetPostListService(this).tryGetPostList(GetPostListRequest("getPostList"))
-    }
+        if(binding.searchBoxMy.isChecked){
+            //클릭 한 결과 박스가 체크되어있으면, 내 게시물만 받아온다.(userCreatedPost가 1인 것) isPrivate은 상관없음.
+            GetPostListService(this).tryGetPostList(GetPostListRequest("getPostList",null,null,null,1,null))
+        }
+        else{
+            //전체공개(isPrivate 비공개 여부가 0인 것들만! userCreatedPost는 상관없음.
+            GetPostListService(this).tryGetPostList(GetPostListRequest("getPostList",null,null,null,null,0))
+        }
+        checkBoxMy()
+        searchPost()
+        searchDays()
 
+
+    }
     override fun onMapReady(p0: NaverMap) {
         naverMapSearch = p0
         //지도 타입 선택
@@ -93,7 +120,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(FragmentSearchBinding
         naverMapSearch!!.locationSource = locationSource //현재위치 표시
         naverMapSearch!!.locationTrackingMode = LocationTrackingMode.Follow
         //게시물 목록 API
-        GetPostListService(this).tryGetPostList(GetPostListRequest("getPostList"))
+        GetPostListService(this).tryGetPostList(GetPostListRequest("getPostList",null,null,null,null,null))
     }
     //MapView를 Fragment에서 사용할 때에는 생명주기에 맞춰 각각 onViewCreated와 onDestroy에서 super함수를 호출해줘야한다.
     override fun onResume() {
@@ -139,11 +166,13 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(FragmentSearchBinding
             markerList.clear()
         }
 
+        Log.d("게시물 목록","")
         locationList = response.data.list
         for(i in locationList.iterator()){
             Log.d("${i.id}","${i.locationObj.lat}, ${i.locationObj.lng}")
         }
         for(i in locationList.iterator()){
+
             setMark(i.id,Marker(),i.locationObj.lat.toDouble(),i.locationObj.lng.toDouble(),R.drawable.ar_map_marker_text_custom)
         }
 
@@ -152,13 +181,21 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(FragmentSearchBinding
             markerList[i].onClickListener = Overlay.OnClickListener {
                 showCustomToast("${markerList[i].tag }")
 
+                ApplicationClass.postedId = markerList[i].tag.toString()
+                postedDialog.create()
+                postedDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                postedDialog.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
 
+                //        동작은 되지만 꺼질 때의 애니메이션이 미작동
+                (postedDialog.window!!.decorView as ViewGroup)
+                    .getChildAt(0).startAnimation(
+                        AnimationUtils.loadAnimation(
+                            context, R.anim.open
+                        )
+                    )
 
 
                 postedDialog.show()
-
-
-                PostedService(this).tryGetPosted(PostedRequest("getPostInfo",markerList[i].tag.toString()))
                 false
             }
         }
@@ -174,5 +211,46 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(FragmentSearchBinding
     }
     override fun onPostedFailure(message: String) {
         Log.d("게시물 정보 요청 실패",message)
+    }
+
+    //내 게시물 조회 체크박스
+    private fun checkBoxMy(){
+        binding.searchBoxMy.setOnClickListener {
+            if(binding.searchBoxMy.isChecked){
+                //클릭 한 결과 박스가 체크되어있으면, 내 게시물만 받아온다.(userCreatedPost가 1인 것) isPrivate은 상관없음.
+                GetPostListService(this).tryGetPostList(GetPostListRequest("getPostList",null,null,null,1,null))
+            }
+            else{
+                //전체공개(isPrivate 비공개 여부가 0인 것들만! userCreatedPost는 상관없음.
+                GetPostListService(this).tryGetPostList(GetPostListRequest("getPostList",null,null,null,null,null))
+            }
+        }
+    }
+    //게시물 검색
+    private fun searchPost(){
+        //keyword(#이 붙어 있으면 해시태그에서만 검색, #이 붙지 않으면 내용과 해시태그에서 검색)
+        binding.searchInputIv.setOnClickListener {
+            showCustomToast("돋보기 누름")
+            val keyword = binding.searchInputEt.text.toString()
+            if(binding.searchBoxMy.isChecked) {
+                GetPostListService(this).tryGetPostList(GetPostListRequest("getPostList", null, keyword, null, 1, null))
+            }
+            else{
+                GetPostListService(this).tryGetPostList(GetPostListRequest("getPostList", null, keyword, null, null, null))
+            }
+            //검색이 끝나면 검색창의 텍스트 clear
+            binding.searchInputEt.text?.clear()
+//            GetPostListService(this).tryGetPostList(GetPostListRequest("getPostList"))
+        }
+    }
+
+    //기간 설정
+    private fun searchDays(){
+        binding.searchFilter.setOnClickListener {
+            searchFilterDialog.create()
+            searchFilterDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            searchFilterDialog.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+            searchFilterDialog.show()
+        }
     }
 }

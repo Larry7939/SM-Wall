@@ -188,7 +188,7 @@ class PostFragment : BaseFragment<FragmentPostBinding>(FragmentPostBinding::bind
         Log.d("Post - 현재 위치","${ApplicationClass.latitude},${ApplicationClass.longtidute}")
 
         //error code 301 - 이미지와 내용 둘다 없는 경우
-        Log.d("Posted","이미지 추가 완료 ${postImages[0]}, ${postImages[1]}")
+//        Log.d("Posted","이미지 추가 완료 ${postImages[0]}, ${postImages[1]}")
 
         PostPostingService(this).tryPostPosting(PostPostingRequest("createPost", contents, postImages, hashStringToPost, isPrivate, ApplicationClass.latitude.toString(),ApplicationClass.longtidute.toString()))
     }

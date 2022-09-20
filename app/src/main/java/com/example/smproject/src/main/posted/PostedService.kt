@@ -11,7 +11,9 @@ import retrofit2.Response
 
 class PostedService(val view: PostedView) {
     fun tryGetPosted(postedRequest: PostedRequest){
+
         val postedRetrofitInterface = ApplicationClass.sRetrofit.create(PostedRetrofitInterface::class.java)
+
         postedRetrofitInterface.postPosted(postedRequest).enqueue(object:
             Callback<PostedResponse>{
             override fun onResponse(
