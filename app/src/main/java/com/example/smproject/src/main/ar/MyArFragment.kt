@@ -12,6 +12,7 @@ import android.view.WindowManager
 import android.view.animation.AnimationUtils
 import androidx.fragment.app.Fragment
 import com.example.smproject.R
+import com.example.smproject.ar.codelabs.hellogeospatial.HelloGeoActivity
 import com.example.smproject.config.ApplicationClass
 import com.example.smproject.config.BaseFragment
 import com.example.smproject.databinding.FragmentMyarBinding
@@ -29,6 +30,8 @@ import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.Overlay
 import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.util.FusedLocationSource
+
+
 
 class MyArFragment : BaseFragment<FragmentMyarBinding>(FragmentMyarBinding::bind,R.layout.fragment_myar), OnMapReadyCallback,GetPostListView {
     lateinit var mapViewAr: MapView //레이아웃의 MapView와 연결
@@ -85,6 +88,16 @@ class MyArFragment : BaseFragment<FragmentMyarBinding>(FragmentMyarBinding::bind
             binding.arCamBtn.visibility = View.VISIBLE
             binding.arMapBtn.visibility = View.GONE
         }
+
+        //cam버튼 누르면 ar카메라 모드로 변경
+        binding.arCamBtn.setOnClickListener {
+            binding.arMapBtn.visibility = View.VISIBLE
+            binding.arCamBtn.visibility = View.GONE
+            startActivity(Intent(activity, HelloGeoActivity::class.java))
+            //startActivity(Intent(activity, UnityPlayerActivity::class.java))
+        }
+
+
     }
     override fun onMapReady(p1: NaverMap) {
         CurrentLocation(requireContext()).returnLocation()
@@ -163,17 +176,6 @@ class MyArFragment : BaseFragment<FragmentMyarBinding>(FragmentMyarBinding::bind
 
                 ApplicationClass.postedId = markerList[i].tag.toString()
                 postedDialog.create()
-                postedDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-                postedDialog.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
-
-                //        동작은 되지만 꺼질 때의 애니메이션이 미작동
-                (postedDialog.window!!.decorView as ViewGroup)
-                    .getChildAt(0).startAnimation(
-                        AnimationUtils.loadAnimation(
-                            context, R.anim.open
-                        )
-                    )
-
                 postedDialog.show()
                 false
             }

@@ -1,5 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="../../../../../layout/custom_preview.xml" value="0.15462962962962962" />
+        <entry key="app/src/main/res/drawable/ar_map_marker_photo.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/ar_map_marker_test.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/custom_sign_tv.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/menu_click_color.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/post_finish_btn.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/post_img_add.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/post_imglist_border.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/post_switch_thumb.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/post_switch_track_off.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/post_switch_track_on.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/post_switch_track_selector.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/search_cursor_drawable.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/search_select_handler.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/activity_ar.xml" value="0.182518115942029" />
+        <entry key="app/src/main/res/layout/activity_id_signup.xml" value="0.182518115942029" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.182518115942029" />
+        <entry key="app/src/main/res/layout/activity_main_geo.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/activity_signin.xml" value="0.182518115942029" />
+        <entry key="app/src/main/res/layout/activity_splash.xml" value="0.182518115942029" />
+        <entry key="app/src/main/res/layout/dialog_loading.xml" value="0.182518115942029" />
+        <entry key="app/src/main/res/layout/dialog_logout.xml" value="0.182518115942029" />
+        <entry key="app/src/main/res/layout/dialog_posted.xml" value="0.12107396149949341" />
+        <entry key="app/src/main/res/layout/fragment_info.xml" value="0.182518115942029" />
+        <entry key="app/src/main/res/layout/fragment_myar.xml" value="0.182518115942029" />
+        <entry key="app/src/main/res/layout/fragment_post.xml" value="0.12107396149949341" />
+      </map>
+    </option>
+  </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="11" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>

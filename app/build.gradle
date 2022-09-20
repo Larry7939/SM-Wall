@@ -83,11 +83,33 @@ dependencies {
 //    //ARCore
 //    implementation 'com.google.ar.sceneform.ux:sceneform-ux:1.15.0'
 
-
     //FragmentResult API를 사용한 Fragment간 데이터 통신
     def fragment_version = "1.3.0-alpha08"
     // 프래그먼트 1.3.0
     implementation "androidx.fragment:fragment:$fragment_version"
     // 코틀린용 프래그먼트 1.3.0
     implementation "androidx.fragment:fragment-ktx:$fragment_version"
+
+
+    // AR!!
+    // ARCore (Google Play Services for AR) library.
+    implementation 'com.google.ar:core:1.31.0'
+
+    // Obj - a simple Wavefront OBJ file loader
+    // https://github.com/javagl/Obj
+    implementation 'de.javagl:obj:0.2.1'
+
+    // implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'androidx.lifecycle:lifecycle-common-java8:2.2.0'
+
+    //implementation 'com.google.android.material:material:1.1.0'
+
+    //implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    implementation 'com.google.android.gms:play-services-auth:20+'
+    //implementation 'com.google.android.gms:play-services-location:19+'
+    implementation 'com.google.android.gms:play-services-maps:18.0.2'
+
+    implementation 'io.github.sceneview:arsceneview:0.9.0'
+
 }
