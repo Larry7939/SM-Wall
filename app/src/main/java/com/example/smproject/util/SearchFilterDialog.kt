@@ -31,6 +31,7 @@ class SearchFilterDialog(context: Context) :Dialog(context){
         binding.searchDialogSeekbar.setOnSeekBarChangeListener(object:OnSeekBarChangeListener{
             override fun onProgressChanged(p0: SeekBar?, p1: Int, p2: Boolean) {
                 // onProgressChange - Seekbar 값 변경될때마다 호출
+                binding.searchDialogSeekbar.tag = p1
             }
 
             override fun onStartTrackingTouch(p0: SeekBar?) {
