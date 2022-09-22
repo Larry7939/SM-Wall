@@ -16,8 +16,11 @@
 //package com.google.ar.core.codelabs.hellogeospatial
 package com.example.smproject.ar.codelabs.hellogeospatial
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.maps.model.LatLng
@@ -40,6 +43,7 @@ import com.google.ar.core.exceptions.UnavailableDeviceNotCompatibleException
 import com.google.ar.core.exceptions.UnavailableSdkTooOldException
 import com.google.ar.core.exceptions.UnavailableUserDeclinedInstallationException
 import androidx.fragment.app.Fragment
+import com.example.smproject.R
 import com.example.smproject.src.main.MainActivity
 import io.github.sceneview.SceneView
 
@@ -99,6 +103,14 @@ class HelloGeoActivity : AppCompatActivity(){
     // Set up the Hello AR renderer.
 
     SampleRender(view.surfaceView, renderer, assets)
+
+    val btn = findViewById<Button>(R.id.ar_map_btn) as Button
+    btn.setOnClickListener(View.OnClickListener {
+      Log.d("button!!", "")
+      val intent = Intent(this, MainActivity::class.java)
+      intent.apply {putExtra("", "")}
+      startActivity(intent)
+    })
   }
 
 

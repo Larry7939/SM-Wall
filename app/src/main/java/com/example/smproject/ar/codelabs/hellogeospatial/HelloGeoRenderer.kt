@@ -35,10 +35,16 @@ import com.example.smproject.ar.examples.java.common.samplerender.Shader
 import com.example.smproject.ar.examples.java.common.samplerender.Texture
 import com.example.smproject.ar.examples.java.common.samplerender.arcore.BackgroundRenderer
 import com.example.smproject.config.ApplicationClass
-import com.example.smproject.src.main.getPostApi.GetPostListService
-import com.example.smproject.src.main.getPostApi.models.GetPostListRequest
-import com.example.smproject.src.main.getPostApi.models.GetPostListResonse
-import com.example.smproject.src.main.getPostApi.models.LocationObj
+import com.example.smproject.src.main.getArPostApi.models.GetArPostListResponse
+import com.example.smproject.src.main.getArPostApi.models.LocationObj
+import com.example.smproject.src.main.getArPostApi.GetArPostListService
+import com.example.smproject.src.main.getArPostApi.models.GetArPostListRequest
+//import com.example.smproject.src.main.getPostApi.models.GetPostListRequest
+//import com.example.smproject.src.main.getPostApi.models.GetPostListResonse
+//import com.example.smproject.src.main.getPostApi.GetPostListService
+//import com.example.smproject.src.main.getPostApi.models.GetPostListRequest
+//import com.example.smproject.src.main.getPostApi.models.GetPostListResonse
+//import com.example.smproject.src.main.getPostApi.models.LocationObj
 import com.example.smproject.util.PostedDialog
 import com.google.ar.core.exceptions.CameraNotAvailableException
 import java.io.IOException
@@ -102,6 +108,11 @@ class HelloGeoRenderer(val activity: HelloGeoActivity, val tapHelper: TapHelper)
 
     private var currentDevicePoseList: ArrayList<CurrentDevicePose> = arrayListOf()
 
+    private lateinit var existingLocation: LocationObj
+    private var arView: GetPostListArView = GetPostListArView(this)
+    private var first = 0
+    private var checker = 0
+
 
 
   override fun onResume(owner: LifecycleOwner) {
@@ -127,13 +138,16 @@ class HelloGeoRenderer(val activity: HelloGeoActivity, val tapHelper: TapHelper)
         virtualObjectTexture =
           Texture.createFromAsset(
             render,
-            "models/spatial_marker_baked.png",
+            //"models/spatial_marker_baked.png",
+            "models/mapPointerRed.png",
             Texture.WrapMode.CLAMP_TO_EDGE,
             Texture.ColorFormat.SRGB
           )
 
         //virtualObjectMesh = Mesh.createFromAsset(render, "models/geospatial_marker.obj");
-        virtualObjectMesh = Mesh.createFromAsset(render, "models/cone.obj");
+//        virtualObjectMesh = Mesh.createFromAsset(render, "models/cone.obj");
+        virtualObjectMesh = Mesh.createFromAsset(render, "models/middleMapPointer.obj");
+
 
         virtualObjectShader =
           Shader.createFromAssets(
@@ -152,34 +166,53 @@ class HelloGeoRenderer(val activity: HelloGeoActivity, val tapHelper: TapHelper)
         Log.d("width, height", "${width},${height}")
 
 
-        val view = GetPostListArView(this)
-        GetPostListService(view).tryGetPostList(GetPostListRequest("getPostList", null, null, null, null, null))
+//        val view = GetPostListArView(this)
+//        GetPostListService(view).tryGetPostList(GetPostListRequest("getPostList", null, null, null, null, null))
 
       } catch (e: IOException) {
         Log.e(TAG, "Failed to read a required asset file", e)
+
         showError("Failed to read a required asset file: $e")
       }
     }
 
 
-    fun onGetPostListSuccess(response: GetPostListResonse) {
-      postedDialog = PostedDialog(activity)
+//    fun onGetPostListSuccess(response: GetPostListResonse) {
+//      postedDialog = PostedDialog(activity)
+//
+//      Log.d("AR 게시물 목록", "")
+//      val responseList = response.data.list
+//      for(item in responseList.iterator()){
+//        markerObjList.add(MarkerObj(item.id, item.locationObj, null))
+//      }
+//
+//      createMultiMarker(markerObjList)
+////      createMarker(LatLng(37.468736, 126.895482)) // 사무실
+//    }
+//
+//    fun onGetPostListFailure(message: String) {
+//      Log.d("AR 게시물 목록 요청 실패", message)
+//    }
 
-      Log.d("AR 게시물 목록", "")
-      val responseList = response.data.list
-      for(item in responseList.iterator()){
-        markerObjList.add(MarkerObj(item.id, item.locationObj, null))
-      }
+  fun onGetArPostListSuccess(response: GetArPostListResponse) {
+    postedDialog = PostedDialog(activity)
 
-      createMultiMarker(markerObjList)
-//      createMarker(LatLng(37.468736, 126.895482)) // 사무실
+    markerObjList.clear()
+    Log.d("AR 게시물 목록", "")
+    val responseList = response.data.list
+    for(item in responseList.iterator()){
+      markerObjList.add(MarkerObj(item.id, item.locationObj, null))
     }
 
-    fun onGetPostListFailure(message: String) {
-      Log.d("AR 게시물 목록 요청 실패", message)
-    }
+    createMultiMarker(markerObjList)
+  }
 
-    override fun onSurfaceChanged(render: SampleRender, width: Int, height: Int) {
+  fun onGetArPostListFailure(message: String) {
+    Log.d("AR 게시물 목록 요청 실패", message)
+  }
+
+
+  override fun onSurfaceChanged(render: SampleRender, width: Int, height: Int) {
       displayRotationHelper.onSurfaceChanged(width, height)
       virtualSceneFramebuffer.resize(width, height)
     }
@@ -248,21 +281,26 @@ class HelloGeoRenderer(val activity: HelloGeoActivity, val tapHelper: TapHelper)
 
       // TODO: Obtain Geospatial information and display it on the map.
       val earth = session.earth
-      if (earth?.trackingState == TrackingState.TRACKING) {
-        // TODO: the Earth object may be used here.
-        val cameraGeospatialPose = earth.cameraGeospatialPose
 
-        activity.view.mapView?.updateMapPosition(
-          latitude = cameraGeospatialPose.latitude,
-          longitude = cameraGeospatialPose.longitude,
-          heading = cameraGeospatialPose.heading
-        )
+      if(earth?.trackingState == TrackingState.TRACKING) {
+        val lat = earth.cameraGeospatialPose.latitude
+        val lng = earth.cameraGeospatialPose.longitude
+        if(first == 0){
+          existingLocation = LocationObj(lat.toString(), lng.toString())
+          GetArPostListService(arView).tryGetArPostList(GetArPostListRequest("getArPostList", lat.toString(), lng.toString()))
+          first = 1
+        }else if(existingLocation.lat.toDouble() + 0.0001 < lat || existingLocation.lat.toDouble() - 0.0001 > lat
+          || existingLocation.lng.toDouble() + 0.0001 < lng || existingLocation.lng.toDouble() - 0.0001 > lng ){
+          checker = 1
+          existingLocation = LocationObj(lat.toString(), lng.toString())
+          GetArPostListService(arView).tryGetArPostList(GetArPostListRequest("getArPostList", lat.toString(), lng.toString()))
+        }
       }
-      //activity.view.updateStatusText(earth, earth.cameraGeospatialPose)
+
 
       // Draw the placed anchor, if it exists.
       //currentDevicePoseList.clear()
-      if(markerObjList != null){
+      if(markerObjList != null && checker == 0){
         if(earth?.trackingState == TrackingState.TRACKING){
           render.renderCompassAtAnchor(markerObjList)
         }
@@ -276,13 +314,13 @@ class HelloGeoRenderer(val activity: HelloGeoActivity, val tapHelper: TapHelper)
       if(tap !== null){
         Log.i(TAG,"tap")
 
-        Log.d("tap touch", "${tap.x},${(2022-tap.y)}")
+        Log.d("tap touch", "${tap.x},${(height+100-tap.y)}")
 
         if(currentDevicePoseList.size > 0) {
           for(item in currentDevicePoseList.iterator()){
             var x = item.pose.x
             var y = item.pose.y
-            if ((tap.x < x+50 && tap.x > x-50) && ((2200 - tap.y) < y+50 && (2200 - tap.y) > y-50)) {
+            if ((tap.x < x+200 && tap.x > x-200) && ((height+100 - tap.y) < y+200 && (height+100 - tap.y) > y-200)) {
               Log.i("tap click!!!!", "${item.id}")
               touchObject(item.id)
               break
@@ -320,7 +358,7 @@ class HelloGeoRenderer(val activity: HelloGeoActivity, val tapHelper: TapHelper)
 
 
   fun createMultiMarker(markerList: ArrayList<MarkerObj>) {
-
+//    markerList.clear()
 
     // TODO: place an anchor at the given position.
     val earth = session?.earth ?: return
@@ -349,6 +387,7 @@ class HelloGeoRenderer(val activity: HelloGeoActivity, val tapHelper: TapHelper)
     for(marker in markerList.iterator()){
       marker.anchor = earth.createAnchor(marker.locationObj.lat.toDouble(), marker.locationObj.lng.toDouble(), altitude, qx, qy, qz, qw)
     }
+    checker = 0
 
   }
 
