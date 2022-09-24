@@ -31,9 +31,10 @@ class SearchFilterDialog(context: Context) :Dialog(context){
         binding.searchDialogSeekbar.setOnSeekBarChangeListener(object:OnSeekBarChangeListener{
             override fun onProgressChanged(p0: SeekBar?, p1: Int, p2: Boolean) {
                 // onProgressChange - Seekbar 값 변경될때마다 호출
-                binding.searchDialogSeekbar.tag = p1
+                if (p0 != null) {
+                    binding.searchDialogChangeTv.text = "${p0.progress}일 내에 작성된 게시물을 표시합니다."
+                }
             }
-
             override fun onStartTrackingTouch(p0: SeekBar?) {
                 // onStartTeackingTouch - SeekBar 값 변경위해 첫 눌림에 호출
             }
@@ -42,7 +43,6 @@ class SearchFilterDialog(context: Context) :Dialog(context){
                 //Seekbar를 멈추거 손을 뗏을 때 호출
                 p0?.progress?.let { loadList(it) }
             }
-
         })
 
     }
@@ -54,7 +54,7 @@ class SearchFilterDialog(context: Context) :Dialog(context){
     }
     //SearchFragment의 search Days함수 호출
     fun loadList(days:Int){
-        Toast.makeText(context,"${days}일 내에 작성된 게시물을 표시합니다.", Toast.LENGTH_SHORT).show()
+//        Toast.makeText(context,"${days}일 내에 작성된 게시물을 표시합니다.", Toast.LENGTH_SHORT).show()
         SearchFragment.searchDays = days
 //        Toast.makeText(context, "필터 호출됨", Toast.LENGTH_SHORT).show()
 //        searchFilter?.searchDays(days)

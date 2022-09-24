@@ -45,6 +45,11 @@ import com.example.smproject.src.main.getArPostApi.models.GetArPostListRequest
 //import com.example.smproject.src.main.getPostApi.models.GetPostListRequest
 //import com.example.smproject.src.main.getPostApi.models.GetPostListResonse
 //import com.example.smproject.src.main.getPostApi.models.LocationObj
+import com.example.smproject.src.main.MainActivity
+import com.example.smproject.src.main.getPostApi.GetPostListService
+import com.example.smproject.src.main.getPostApi.models.GetPostListRequest
+import com.example.smproject.src.main.getPostApi.models.GetPostListResonse
+//import com.example.smproject.src.main.getPostApi.models.LocationObj
 import com.example.smproject.util.PostedDialog
 import com.google.ar.core.exceptions.CameraNotAvailableException
 import java.io.IOException
@@ -195,7 +200,7 @@ class HelloGeoRenderer(val activity: HelloGeoActivity, val tapHelper: TapHelper)
 //    }
 
   fun onGetArPostListSuccess(response: GetArPostListResponse) {
-    postedDialog = PostedDialog(activity)
+    postedDialog = PostedDialog(activity, activity)
 
     markerObjList.clear()
     Log.d("AR 게시물 목록", "")
@@ -205,7 +210,7 @@ class HelloGeoRenderer(val activity: HelloGeoActivity, val tapHelper: TapHelper)
     }
 
     createMultiMarker(markerObjList)
-  }
+    }
 
   fun onGetArPostListFailure(message: String) {
     Log.d("AR 게시물 목록 요청 실패", message)

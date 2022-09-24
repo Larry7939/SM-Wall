@@ -1,5 +1,6 @@
 package com.example.smproject.src.main.search
 
+import android.app.Activity
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -36,7 +37,7 @@ import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.util.FusedLocationSource
 
 
-class SearchFragment : BaseFragment<FragmentSearchBinding>(FragmentSearchBinding::bind,R.layout.fragment_search), OnMapReadyCallback, GetPostListView, PostedView {
+class SearchFragment(activity: Activity) : BaseFragment<FragmentSearchBinding>(FragmentSearchBinding::bind,R.layout.fragment_search), OnMapReadyCallback, GetPostListView, PostedView {
 
     lateinit var mapViewSearch:MapView //레이아웃의 MapView와 연결
     private var naverMapSearch:NaverMap?=null //네이버 맵관련 기능 구현 용도
@@ -50,18 +51,22 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(FragmentSearchBinding
     private var markerList:ArrayList<Marker> = arrayListOf()
     private lateinit var postedDialog: PostedDialog
     private lateinit var searchFilterDialog: SearchFilterDialog
+    private lateinit var sContext: Context
+    private var sActivity:Activity = activity
+
     companion object{
         private var instance:SearchFragment? = null
         fun getInstance(): SearchFragment? { return instance        }
         var searchDays:Int = 10
     }
 
-    fun newInstance(): Fragment {
-        return SearchFragment()
-    }
+//    fun newInstance(): Fragment {
+//        return SearchFragment()
+//    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
+        sContext = context
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,31 +74,9 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(FragmentSearchBinding
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Toast.makeText(context,"${searchDays}일 내에 작성된 게시물을 표시합니다.", Toast.LENGTH_SHORT).show()
-
+        Toast.makeText(sContext,"${searchDays}일 내에 작성된 게시물을 표시합니다.", Toast.LENGTH_SHORT).show()
         locationSource = FusedLocationSource(this,LOCATION_PERMISSION_REQUEST_CODE) //현재 위치 나타내기 위한 locationSource
-        searchFilterDialog = SearchFilterDialog(context as MainActivity)
-
-        //새로고침버튼을 누르면 게시물을 받아옴.
-        binding.searchFabRefresh.setOnClickListener{
-            //게시물 목록 API
-            if(binding.searchBoxMy.isChecked){
-                //클릭 한 결과 박스가 체크되어있으면, 내 게시물만 받아온다.(userCreatedPost가 1인 것) isPrivate은 상관없음.
-                GetPostListService(this).tryGetPostList(GetPostListRequest("getPostList",searchDays,null,null,1,null))
-            }
-            else{
-                //전체공개(isPrivate 비공개 여부가 0인 것들만! userCreatedPost는 상관없음.
-                GetPostListService(this).tryGetPostList(GetPostListRequest("getPostList",searchDays,null,null,null,0))
-            }
-            showCustomToast("게시물 새로고침 완료")
-
-        }
-        //현위치 추적버튼을 누르면 현위치 갱신 및 지도 위치 변경
-        binding.searchFabTracking.setOnClickListener {
-            CurrentLocation(requireContext()).returnLocation()
-            cameraPos = CameraPosition(LatLng(ApplicationClass.latitude, ApplicationClass.longtidute), zoom, tilt, 0.0)
-            naverMapSearch?.cameraPosition  = cameraPos
-        }
+        searchFilterDialog = SearchFilterDialog(sContext as MainActivity)
 
         mapViewSearch = binding.searchMap
         mapViewSearch.onCreate(savedInstanceState)
@@ -109,6 +92,26 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(FragmentSearchBinding
         }
         checkBoxMy()
         searchPost()
+        //현위치 추적버튼을 누르면 현위치 갱신 및 지도 위치 변경
+        binding.searchFabTracking.setOnClickListener {
+            CurrentLocation(requireContext()).returnLocation()
+            cameraPos = CameraPosition(LatLng(ApplicationClass.latitude, ApplicationClass.longtidute), zoom, tilt, 0.0)
+            naverMapSearch?.cameraPosition  = cameraPos
+        }
+        //새로고침버튼을 누르면 게시물을 받아옴.
+        binding.searchFabRefresh.setOnClickListener{
+            //게시물 목록 API
+            if(binding.searchBoxMy.isChecked){
+                //클릭 한 결과 박스가 체크되어있으면, 내 게시물만 받아온다.(userCreatedPost가 1인 것) isPrivate은 상관없음.
+                GetPostListService(this).tryGetPostList(GetPostListRequest("getPostList",searchDays,null,null,1,null))
+            }
+            else{
+                //전체공개(isPrivate 비공개 여부가 0인 것들만! userCreatedPost는 상관없음.
+                GetPostListService(this).tryGetPostList(GetPostListRequest("getPostList",searchDays,null,null,null,0))
+            }
+            showCustomToast("게시물 새로고침 완료")
+
+        }
         //검색 필터버튼 -> 다이얼로그
         binding.searchFilter.setOnClickListener {
             searchFilterDialog.create()
@@ -166,7 +169,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(FragmentSearchBinding
         }
     }
     override fun onGetPostListSuccess(response: GetPostListResonse) {
-        postedDialog = PostedDialog(context as MainActivity)
+        postedDialog = PostedDialog(sContext as MainActivity,sActivity)
 
         //새로고침하면 게시물 목록을 다시 받아오면서 map에서 marker를 지우고 markerList를 초기화
         if(markerList.isNotEmpty()){
@@ -183,10 +186,16 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(FragmentSearchBinding
 //        }
         for(i in locationList.iterator()){
             if(i.withImage){
-                setMark(i.id,Marker(),i.locationObj.lat.toDouble(),i.locationObj.lng.toDouble(),R.drawable.ar_map_marker_text_custom)
+                setMark(i.id,Marker(),
+                    i.locationObj.lat.toDouble(),
+                    i.locationObj.lng.toDouble(),
+                    R.drawable.ar_map_marker_photo_custom)
             }
             else if(!i.withImage){
-                setMark(i.id,Marker(),i.locationObj.lat.toDouble(),i.locationObj.lng.toDouble(),R.drawable.ar_map_marker_photo_custom)
+                setMark(i.id,Marker(),
+                    i.locationObj.lat.toDouble(),
+                    i.locationObj.lng.toDouble(),
+                    R.drawable.ar_map_marker_text_custom)
             }
 
         }
@@ -204,7 +213,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(FragmentSearchBinding
                 (postedDialog.window!!.decorView as ViewGroup)
                     .getChildAt(0).startAnimation(
                         AnimationUtils.loadAnimation(
-                            context, R.anim.open
+                            sContext, R.anim.open
                         )
                     )
                 postedDialog.show()
@@ -276,16 +285,6 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(FragmentSearchBinding
 
     }
 
-    //기간 설정
-    fun searchDays(days:Int){
-        showCustomToast("${days}일 내에 작성된 게시물을 표시합니다.")
-        if(binding.searchBoxMy.isChecked) {
-            GetPostListService(this).tryGetPostList(GetPostListRequest("getPostList", days, null, null, 1, null))
-        }
-        else{
-            GetPostListService(this).tryGetPostList(GetPostListRequest("getPostList", days, null, null, null, 0))
-        }
-    }
 
 
 }

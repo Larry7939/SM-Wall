@@ -1,38 +1,49 @@
 package com.example.smproject.util
 
+import android.app.Activity
+import android.app.ActivityOptions
+import android.app.Application
 import android.app.Dialog
 import android.content.Context
+import android.content.Intent
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.Toast
+import androidx.core.content.ContextCompat.startActivity
+import androidx.core.view.drawToBitmap
 import com.bumptech.glide.Glide
 import com.example.smproject.R
 import com.example.smproject.config.ApplicationClass
 import com.example.smproject.databinding.DialogPostedBinding
-import com.example.smproject.src.main.ar.MyArFragment
-import com.example.smproject.src.main.info.InfoFragmentLoadView
-import com.example.smproject.src.main.info.InfoLoadService
-import com.example.smproject.src.main.info.models.InfoLoadRequest
-import com.example.smproject.src.main.info.models.InfoLoadResponse
+import com.example.smproject.src.main.MainActivity
 import com.example.smproject.src.main.posted.PostedService
 import com.example.smproject.src.main.posted.PostedView
 import com.example.smproject.src.main.posted.models.PostedRequest
 import com.example.smproject.src.main.posted.models.PostedResponse
+import com.gorisse.thomas.lifecycle.getActivity
+import java.io.ByteArrayOutputStream
 
 
-class PostedDialog(context: Context) : Dialog(context), PostedView  {
+class PostedDialog(context: Context,activity: Activity) : Dialog(context), PostedView  {
     private lateinit var binding: DialogPostedBinding
     private var hashTag: String =""
+    private lateinit var dContext: Context
+    private var dActivity: Activity = activity
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DialogPostedBinding.inflate(layoutInflater)
         setContentView(binding.root)
-    }
 
+    }
     override fun create() {
         super.create()
+
+        dContext = context
         PostedService(this).tryGetPosted(PostedRequest("getPostInfo",ApplicationClass.postedId))
+        binding.postedContentImg1.setOnClickListener { clickEvent(it,binding.postedContentImg1.drawToBitmap()) }
+        binding.postedContentImg2.setOnClickListener { clickEvent(it,binding.postedContentImg2.drawToBitmap()) }
+        binding.postedContentImg3.setOnClickListener { clickEvent(it,binding.postedContentImg3.drawToBitmap()) }
     }
 
     override fun show() {
@@ -54,7 +65,7 @@ class PostedDialog(context: Context) : Dialog(context), PostedView  {
         }
 
         if(response.data.info.userObj.imageUrl!=null){ //이미 업로드해놓은 이미지가 존재하는 경우에는 프로필에 이미지 set
-            Glide.with(context).asBitmap().load(response.data.info.userObj.imageUrl.toString()).into(binding.postedProfileImg)
+            Glide.with(dContext).asBitmap().load(response.data.info.userObj.imageUrl.toString()).into(binding.postedProfileImg)
         }
         else{
             binding.postedProfileImg.setImageResource(R.drawable.info_profile)
@@ -64,16 +75,17 @@ class PostedDialog(context: Context) : Dialog(context), PostedView  {
         if(response.data.info.imageUrlList!=null){
             if((response.data.info.imageUrlList).size==1){
                 binding.postedContentImg1.visibility = View.VISIBLE
-                Glide.with(context).asBitmap().load(response.data.info.imageUrlList[0]).into(binding.postedContentImg1)
+                binding.postedContentImg2.visibility = View.INVISIBLE
+                binding.postedContentImg3.visibility = View.INVISIBLE
+                Glide.with(dContext).asBitmap().load(response.data.info.imageUrlList[0]).into(binding.postedContentImg1)
             }
             else if((response.data.info.imageUrlList).size==2){
                 binding.postedContentImg2.visibility = View.VISIBLE
                 binding.postedContentImg3.visibility = View.VISIBLE
-                Glide.with(context).asBitmap().load(response.data.info.imageUrlList[0]).into(binding.postedContentImg2)
-                Glide.with(context).asBitmap().load(response.data.info.imageUrlList[1]).into(binding.postedContentImg3)
+                binding.postedContentImg1.visibility = View.INVISIBLE
+                Glide.with(dContext).asBitmap().load(response.data.info.imageUrlList[0]).into(binding.postedContentImg2)
+                Glide.with(dContext).asBitmap().load(response.data.info.imageUrlList[1]).into(binding.postedContentImg3)
             }
-
-
             //게시물 내용
             binding.postedContentTextText.visibility = View.INVISIBLE
             binding.postedContentTextImg.visibility = View.VISIBLE
@@ -102,5 +114,15 @@ class PostedDialog(context: Context) : Dialog(context), PostedView  {
     }
     override fun onPostedFailure(message: String) {
         Log.d("게시물 정보 요청 실패",message)
+    }
+    private fun clickEvent(view: View, imgBitmap: Bitmap) {
+        //bitmap을 intent로 전송하기 위해 ByteArray로 전환시켜 전달
+        val intent = Intent(context, ImageZoomInActivity::class.java)
+        val os:ByteArrayOutputStream = ByteArrayOutputStream()
+        imgBitmap.compress(Bitmap.CompressFormat.PNG,100,os)
+        val byteArray = os.toByteArray()
+        intent.putExtra("byteArray", byteArray)
+        val opt = ActivityOptions.makeSceneTransitionAnimation(dActivity,view, "imgTrans")
+        startActivity(dContext,intent, opt.toBundle())
     }
 }

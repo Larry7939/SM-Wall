@@ -4,6 +4,9 @@ import android.app.Application
 import android.content.SharedPreferences
 import android.util.Log
 import com.example.smproject.R
+import com.example.smproject.src.main.getPostApi.models.GetPostListRetrofitInterface
+import com.example.smproject.src.main.posted.PostedRetrofitInterface
+import com.example.smproject.util.BitmapConverter
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -23,10 +26,16 @@ class ApplicationClass: Application() {
         var latitude:Double=0.0
         var longtidute:Double=0.0
         var postedId:String = "" //Dialog에서 사용하기 위한 게시물 id
+        val bitmapConverter = BitmapConverter()
+        lateinit var getPostListRetrofitInterface:GetPostListRetrofitInterface //게시물 리스트 load API
+        lateinit var postedRetrofitInterface:PostedRetrofitInterface //게시물 정보 load API
     }
     //앱 최초 생성 시에 sp를 새로만들어주고 레트로핏 인스턴스 생성
     override fun onCreate() {
         super.onCreate()
+
+
+
         Log.d("sp 생성 여부","-생성됨")
         sSharedPreferences = applicationContext.getSharedPreferences("${R.string.sp_name}", MODE_PRIVATE)
         initRetrofitInstance()
@@ -49,5 +58,7 @@ class ApplicationClass: Application() {
             .client(client)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
+        getPostListRetrofitInterface = sRetrofit.create(GetPostListRetrofitInterface::class.java)
+        postedRetrofitInterface =sRetrofit.create(PostedRetrofitInterface::class.java)
     }
 }

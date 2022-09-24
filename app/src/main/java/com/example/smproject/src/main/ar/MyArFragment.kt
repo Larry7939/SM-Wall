@@ -1,5 +1,6 @@
 package com.example.smproject.src.main.ar
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
@@ -33,7 +34,7 @@ import com.naver.maps.map.util.FusedLocationSource
 
 
 
-class MyArFragment : BaseFragment<FragmentMyarBinding>(FragmentMyarBinding::bind,R.layout.fragment_myar), OnMapReadyCallback,GetPostListView {
+class MyArFragment(activity: Activity) : BaseFragment<FragmentMyarBinding>(FragmentMyarBinding::bind,R.layout.fragment_myar), OnMapReadyCallback,GetPostListView {
     lateinit var mapViewAr: MapView //레이아웃의 MapView와 연결
     private lateinit var naverMapAr:NaverMap //네이버 맵관련 기능 구현 용도
     private var zoom = 16.2 //줌 레벨
@@ -46,14 +47,18 @@ class MyArFragment : BaseFragment<FragmentMyarBinding>(FragmentMyarBinding::bind
     private lateinit var locationList:ArrayList<Post>
     //set된 Marker들을 모아놓은 MarkerList
     private var markerList:ArrayList<Marker> = arrayListOf()
-
-
-    fun newInstance(): Fragment {
-        return MyArFragment()
-    }
+    private lateinit var aContext: Context
+    private var mActivity:Activity = activity
+//    fun newInstance(): Fragment {
+//        return MyArFragment(activity)
+//    }
     //게시물 사진:base64, 본문:String, 공유여부:Boolean, 위도,경도 : String
+
+
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
+        aContext = context
         CurrentLocation(requireContext()).returnLocation()
         Log.d("Ar 현재 위치","${ApplicationClass.latitude},${ApplicationClass.longtidute}")
     }
@@ -95,8 +100,6 @@ class MyArFragment : BaseFragment<FragmentMyarBinding>(FragmentMyarBinding::bind
             binding.arCamBtn.visibility = View.GONE
             startActivity(Intent(activity, HelloGeoActivity::class.java))
         }
-
-
     }
     override fun onMapReady(p1: NaverMap) {
         CurrentLocation(requireContext()).returnLocation()
@@ -113,8 +116,6 @@ class MyArFragment : BaseFragment<FragmentMyarBinding>(FragmentMyarBinding::bind
         naverMapAr.locationTrackingMode = LocationTrackingMode.Follow
         //게시물 목록 API
         GetPostListService(this).tryGetPostList(GetPostListRequest("getPostList",null,null,null,null,0))
-
-
     }
     override fun onResume() {
         super.onResume()
@@ -148,7 +149,7 @@ class MyArFragment : BaseFragment<FragmentMyarBinding>(FragmentMyarBinding::bind
     }
 
     override fun onGetPostListSuccess(response: GetPostListResonse) {
-        postedDialog = PostedDialog(context as MainActivity)
+        postedDialog = PostedDialog(aContext as MainActivity,mActivity)
 
         //새로고침하면 게시물 목록을 다시 받아오면서 map에서 marker를 지우고 markerList를 초기화
         if (markerList.isNotEmpty()) {
@@ -170,7 +171,7 @@ class MyArFragment : BaseFragment<FragmentMyarBinding>(FragmentMyarBinding::bind
                     Marker(),
                     i.locationObj.lat.toDouble(),
                     i.locationObj.lng.toDouble(),
-                    R.drawable.ar_map_marker_text_custom
+                    R.drawable.ar_map_marker_photo_custom
                 )
             } else if (!i.withImage) {
                 setMark(
@@ -178,15 +179,13 @@ class MyArFragment : BaseFragment<FragmentMyarBinding>(FragmentMyarBinding::bind
                     Marker(),
                     i.locationObj.lat.toDouble(),
                     i.locationObj.lng.toDouble(),
-                    R.drawable.ar_map_marker_photo_custom
+                    R.drawable.ar_map_marker_text_custom
                 )
             }
 
             //각 marker에 리스너 설정
             for (i in 0 until markerList.size) {
                 markerList[i].onClickListener = Overlay.OnClickListener {
-                    showCustomToast("${markerList[i].tag}")
-
                     ApplicationClass.postedId = markerList[i].tag.toString()
                     postedDialog.create()
                     postedDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -196,10 +195,9 @@ class MyArFragment : BaseFragment<FragmentMyarBinding>(FragmentMyarBinding::bind
                     (postedDialog.window!!.decorView as ViewGroup)
                         .getChildAt(0).startAnimation(
                             AnimationUtils.loadAnimation(
-                                context, R.anim.open
+                                aContext, R.anim.open
                             )
                         )
-
                     postedDialog.show()
                     false
                 }

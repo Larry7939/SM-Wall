@@ -47,21 +47,11 @@
         app:layout_constraintEnd_toEndOf="@id/posted_background"
         android:layout_marginTop="100dp"
         android:visibility="invisible"
-        tools:background="@color/greyForPosted">
+        tools:background="@color/greyForPosted"
+        android:transitionName="imgTrans">
     </androidx.appcompat.widget.AppCompatImageView>
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/posted_content_img2"
-        android:layout_width="110dp"
-        android:layout_height="110dp"
-        app:layout_constraintTop_toTopOf="@id/posted_background"
-        app:layout_constraintStart_toEndOf="@id/posted_guideline"
-        android:layout_marginTop="100dp"
-        android:layout_marginStart="20dp"
-        android:visibility="invisible"
-        tools:background="@color/greyForPosted">
-    </androidx.appcompat.widget.AppCompatImageView>
-    <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/posted_content_img3"
         android:layout_width="110dp"
         android:layout_height="110dp"
         app:layout_constraintTop_toTopOf="@id/posted_background"
@@ -69,8 +59,22 @@
         android:layout_marginTop="100dp"
         android:layout_marginEnd="20dp"
         android:visibility="invisible"
-        tools:background="@color/greyForPosted">
+        tools:background="@color/greyForPosted"
+        android:transitionName="imgTrans">
     </androidx.appcompat.widget.AppCompatImageView>
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/posted_content_img3"
+        android:layout_width="110dp"
+        android:layout_height="110dp"
+        app:layout_constraintTop_toTopOf="@id/posted_background"
+        app:layout_constraintStart_toEndOf="@id/posted_guideline"
+        android:layout_marginTop="100dp"
+        android:layout_marginStart="20dp"
+        android:visibility="invisible"
+        tools:background="@color/greyForPosted"
+        android:transitionName="imgTrans">
+    </androidx.appcompat.widget.AppCompatImageView>
+
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/posted_content_text_text"
         android:layout_width="340dp"

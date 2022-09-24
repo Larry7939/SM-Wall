@@ -2,17 +2,15 @@ package com.example.smproject.src.main.posted
 
 import android.util.Log
 import com.example.smproject.config.ApplicationClass
+import com.example.smproject.config.ApplicationClass.Companion.postedRetrofitInterface
 import com.example.smproject.src.login.idsignup.models.IdSignupResponse
 import com.example.smproject.src.main.posted.models.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-
 class PostedService(val view: PostedView) {
     fun tryGetPosted(postedRequest: PostedRequest){
-
-        val postedRetrofitInterface = ApplicationClass.sRetrofit.create(PostedRetrofitInterface::class.java)
 
         postedRetrofitInterface.postPosted(postedRequest).enqueue(object:
             Callback<PostedResponse>{

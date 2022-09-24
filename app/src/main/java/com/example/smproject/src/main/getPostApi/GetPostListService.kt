@@ -2,6 +2,7 @@ package com.example.smproject.src.main.getPostApi
 
 import android.util.Log
 import com.example.smproject.config.ApplicationClass
+import com.example.smproject.config.ApplicationClass.Companion.getPostListRetrofitInterface
 import com.example.smproject.src.main.getPostApi.models.GetPostListRequest
 import com.example.smproject.src.main.getPostApi.models.GetPostListResonse
 import com.example.smproject.src.main.getPostApi.models.GetPostListRetrofitInterface
@@ -12,7 +13,9 @@ import retrofit2.Response
 
 class GetPostListService(val view:GetPostListView) {
     fun tryGetPostList(getPostListRequest: GetPostListRequest){
-        val getPostListRetrofitInterface = ApplicationClass.sRetrofit.create(GetPostListRetrofitInterface::class.java)
+
+
+
         getPostListRetrofitInterface.getPostList(getPostListRequest).enqueue(object:
             Callback<GetPostListResonse>{
             override fun onResponse(call: Call<GetPostListResonse>, response: Response<GetPostListResonse>)

@@ -7,6 +7,7 @@ import android.net.Uri
 import android.provider.MediaStore
 import android.util.Base64
 import android.util.Log
+import androidx.core.graphics.scale
 import java.io.ByteArrayOutputStream
 import java.util.*
 
@@ -22,10 +23,17 @@ class BitmapConverter{
 //        return MediaStore.Images.Media.getBitmap(context?.contentResolver, uri)
 //    }
     fun bitmapToBase64(bitmap: Bitmap?): String {
+        val resized = bitmap?.let { Bitmap.createScaledBitmap(it,1080,1080,true) }
         val byteArrayOutputStream = ByteArrayOutputStream()
-        bitmap?.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
-        val byteArray: ByteArray = byteArrayOutputStream.toByteArray()
-        return(Base64.encodeToString(byteArray, Base64.DEFAULT))
+        resized?.compress(Bitmap.CompressFormat.PNG,100,byteArrayOutputStream)
+        val byteArray:ByteArray = byteArrayOutputStream.toByteArray()
+        return Base64.encodeToString(byteArray,Base64.NO_WRAP)
+
+//        val byteArrayOutputStream = ByteArrayOutputStream()
+//        bitmap?.scale(720,720,true)
+//        bitmap?.compress(Bitmap.CompressFormat.PNG, 60, byteArrayOutputStream)
+//        val byteArray: ByteArray = byteArrayOutputStream.toByteArray()
+//        return(Base64.encodeToString(byteArray, Base64.DEFAULT))
     }
 ////
 ////    fun imgToBase64(iv: AppCompatImageView): String? {
@@ -50,7 +58,7 @@ class BitmapConverter{
     //이미지 사이즈 및 품질 조정
     val resized = Bitmap.createScaledBitmap(img,1080,1080,true)
     val byteArrayOutputStream = ByteArrayOutputStream()
-    resized.compress(Bitmap.CompressFormat.PNG,60,byteArrayOutputStream)
+    resized.compress(Bitmap.CompressFormat.PNG,100,byteArrayOutputStream)
     val byteArray:ByteArray = byteArrayOutputStream.toByteArray()
     return Base64.encodeToString(byteArray, Base64.NO_WRAP)
     }
