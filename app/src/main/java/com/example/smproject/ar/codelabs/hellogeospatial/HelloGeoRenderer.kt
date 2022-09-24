@@ -35,6 +35,7 @@ import com.example.smproject.ar.examples.java.common.samplerender.Shader
 import com.example.smproject.ar.examples.java.common.samplerender.Texture
 import com.example.smproject.ar.examples.java.common.samplerender.arcore.BackgroundRenderer
 import com.example.smproject.config.ApplicationClass
+import com.example.smproject.src.main.MainActivity
 import com.example.smproject.src.main.getPostApi.GetPostListService
 import com.example.smproject.src.main.getPostApi.models.GetPostListRequest
 import com.example.smproject.src.main.getPostApi.models.GetPostListResonse
@@ -163,7 +164,7 @@ class HelloGeoRenderer(val activity: HelloGeoActivity, val tapHelper: TapHelper)
 
 
     fun onGetPostListSuccess(response: GetPostListResonse) {
-      postedDialog = PostedDialog(activity)
+      postedDialog = PostedDialog(activity,activity)
 
       Log.d("AR 게시물 목록", "")
       val responseList = response.data.list

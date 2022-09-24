@@ -13,7 +13,7 @@
     <item android:id="@+id/progressbar" >
         <clip>
             <shape android:shape="line">
-                <stroke android:width="6dp" android:color="@color/purple_500" />
+                <stroke android:width="6dp" android:color="#FF857C" />
             </shape>
         </clip>
     </item>

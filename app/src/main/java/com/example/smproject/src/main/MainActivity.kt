@@ -56,7 +56,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
     }
 
     private fun initBottomNavigation(){
-        fragmentAr = MyArFragment()
+        fragmentAr = MyArFragment(this)
         //초기 Fragment 설정
         fragmentManager.beginTransaction().replace(binding.mainFrame.id, fragmentAr!!).commit() //첫 Fragment는 ar로 설정
         //mainMenu관련 설정
@@ -65,7 +65,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
             when(it.itemId){
                 R.id.first_tab->{
                     if(fragmentAr==null){ //Fragment가 null이면 초기화해주고 add->commit
-                        fragmentAr = MyArFragment()
+                        fragmentAr = MyArFragment(this)
                         fragmentManager.beginTransaction().add(binding.mainFrame.id, fragmentAr!!).commit()
                     }
                     else if(fragmentAr != null){ //null이 아니면 show
@@ -89,11 +89,11 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
                 }
                 R.id.second_tab->{
                     if(fragmentSearch==null){ //Fragment가 null이면 초기화해주고 add->commit
-                        fragmentSearch = SearchFragment()
+                        fragmentSearch = SearchFragment(this)
                         fragmentManager.beginTransaction().add(binding.mainFrame.id,fragmentSearch!!).commit()
                     }
                     else if(fragmentSearch != null){ //null이 아니면 show
-                        fragmentSearch = SearchFragment()
+                        fragmentSearch = SearchFragment(this)
                         fragmentManager.beginTransaction().show(fragmentSearch!!).commit()
                     }
                     if(fragmentAr!=null){

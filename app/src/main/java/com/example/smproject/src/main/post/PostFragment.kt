@@ -3,7 +3,11 @@ package com.example.smproject.src.main.post
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Matrix
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -12,9 +16,11 @@ import android.view.View
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.SwitchCompat
 import androidx.core.view.children
+import androidx.exifinterface.media.ExifInterface
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.example.smproject.R
@@ -26,6 +32,7 @@ import com.example.smproject.src.main.post.models.PostPostingResponse
 import com.example.smproject.util.BitmapConverter
 import com.example.smproject.util.CurrentLocation
 import com.google.android.material.chip.Chip
+import java.io.IOException
 
 
 class PostFragment : BaseFragment<FragmentPostBinding>(FragmentPostBinding::bind,R.layout.fragment_post),PostFragmentPostingView {
@@ -100,9 +107,16 @@ class PostFragment : BaseFragment<FragmentPostBinding>(FragmentPostBinding::bind
                         .into(binding.postPostedIv1)
                     //Uri -> Bitmap -> Base64인코딩
                     if (uri != null) {
-                         postImages.add("data:image/png;base64,${bitmapConverter.uriToBase64(context,uri)}")
+                        // 사진 가져오기
+                        val bitmap = BitmapFactory.decodeStream(context.contentResolver.openInputStream(uri))
+                        // 사진의 회전 정보 가져오기
+                        val orientation = getOrientationOfImage(uri).toFloat()
+                        // 이미지 회전하기
+                        val newBitmap = getRotatedBitmap(bitmap, orientation)
+//                        // 회전된 이미지로 imaView 설정
+//                        binding.postPostedIv1.setImageBitmap(newBitmap)
+                        postImages.add("data:image/png;base64,${bitmapConverter.bitmapToBase64(newBitmap)}")
                     }
-
                 }
                 else if(binding.postPostedIv1.drawable!=null){
                     if(binding.postPostedIv2.drawable!=null){
@@ -114,7 +128,15 @@ class PostFragment : BaseFragment<FragmentPostBinding>(FragmentPostBinding::bind
                             .into(binding.postPostedIv2)
                         //Uri -> Bitmap -> Base64인코딩
                         if (uri != null) {
-                            postImages.add("data:image/png;base64,${bitmapConverter.uriToBase64(context,uri)}")
+                            // 사진 가져오기
+                            val bitmap = BitmapFactory.decodeStream(context.contentResolver.openInputStream(uri))
+                            // 사진의 회전 정보 가져오기
+                            val orientation = getOrientationOfImage(uri).toFloat()
+                            // 이미지 회전하기
+                            val newBitmap = getRotatedBitmap(bitmap, orientation)
+//                            // 회전된 이미지로 imaView 설정
+//                            binding.postPostedIv2.setImageBitmap(newBitmap)
+                            postImages.add("data:image/png;base64,${bitmapConverter.bitmapToBase64(newBitmap)}")
                         }
                     }
                 }
@@ -128,6 +150,46 @@ class PostFragment : BaseFragment<FragmentPostBinding>(FragmentPostBinding::bind
             launcher.launch(intent)
         }
     }
+
+    // 이미지 회전 정보 가져오기
+    @RequiresApi(Build.VERSION_CODES.N)
+    private fun getOrientationOfImage(uri: Uri): Int {
+        // uri -> inputStream
+        val inputStream = context?.contentResolver?.openInputStream(uri)
+        val exif: ExifInterface? = try {
+            inputStream?.let { ExifInterface(it) }
+        } catch (e: IOException) {
+            e.printStackTrace()
+            return -1
+        }
+        inputStream?.close()
+
+        // 회전된 각도 알아내기
+        val orientation = exif?.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
+        if (orientation != -1) {
+            when (orientation) {
+                ExifInterface.ORIENTATION_ROTATE_90 -> return 90
+                ExifInterface.ORIENTATION_ROTATE_180 -> return 180
+                ExifInterface.ORIENTATION_ROTATE_270 -> return 270
+            }
+        }
+        return 0
+    }
+
+    // 이미지 회전하기
+    @Throws(Exception::class)
+    private fun getRotatedBitmap(bitmap: Bitmap?, degrees: Float): Bitmap? {
+        if (bitmap == null) return null
+        if (degrees == 0F) return bitmap
+        val m = Matrix()
+        m.setRotate(degrees, bitmap.width.toFloat() / 2, bitmap.height.toFloat() / 2)
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, m, true)
+    }
+
+
+
+
+
     private fun hashTag(){
         binding.postHashEt.addTextChangedListener(
             object : TextWatcher {
@@ -145,7 +207,7 @@ class PostFragment : BaseFragment<FragmentPostBinding>(FragmentPostBinding::bind
                             var chip = Chip(context)
                             hashString = hashString.substring(0,hashString.length-1)//replace로는 맨 끝 공백이 사라지지 않아서, substring으로 공백 없애주기!
                             chip.text = hashString
-                            chip.setTextColor(R.color.black)
+                            chip.setTextColor(resources.getColor(R.color.black))
                             chip.setChipBackgroundColorResource(R.color.basicBackground)
                             chip.setTextAppearance(R.style.TextAppearance_MaterialComponents_Chip)
                             chip.isCloseIconVisible = true
@@ -181,8 +243,6 @@ class PostFragment : BaseFragment<FragmentPostBinding>(FragmentPostBinding::bind
             hashStringToPost = hashList.joinToString(",")
             hashStringToPost = hashStringToPost.replace("#","")
         }
-
-
         CurrentLocation(requireContext()).returnLocation()
         //위도,경도
         Log.d("Post - 현재 위치","${ApplicationClass.latitude},${ApplicationClass.longtidute}")

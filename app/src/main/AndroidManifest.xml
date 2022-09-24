@@ -9,19 +9,14 @@
     <!-- 위치,앨범 접근 권한 -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> <!-- 카메라 사용 권한 -->
-    <uses-permission android:name="android.permission.CAMERA" />
-
-
-
-    <!-- Sceneform requires OpenGL ES 3.0 or later. 이 앱에 필요한 하드웨어 기능을 지정하는 uses features - OpenGL ES버전 3.0이상/ARCore지원기기-->
+    <uses-permission android:name="android.permission.CAMERA" /> <!-- Sceneform requires OpenGL ES 3.0 or later. 이 앱에 필요한 하드웨어 기능을 지정하는 uses features - OpenGL ES버전 3.0이상/ARCore지원기기 -->
     <uses-feature
         android:glEsVersion="0x00030000"
+        android:required="true" /> <!-- Indicates that app requires ARCore ("AR Required"). Ensures the app is visible only in the Google Play Store on devices that support ARCore. For "AR Optional" apps remove this line. -->
+    <!-- <uses-feature android:name="android.hardware.camera.ar" /> -->
+    <uses-feature
+        android:name="android.hardware.camera.ar"
         android:required="true" />
-    <!-- Indicates that app requires ARCore ("AR Required"). Ensures the app is visible only in the Google Play Store on devices that support ARCore. For "AR Optional" apps remove this line. -->
-    <!--    <uses-feature android:name="android.hardware.camera.ar" />-->
-    <uses-feature android:name="android.hardware.camera.ar" android:required="true"/>
-    <uses-feature android:glEsVersion="0x00020000" android:required="true" />
-
 
     <application
         android:name=".config.ApplicationClass"
@@ -31,6 +26,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.SmProject">
+        <activity android:name=".util.ImageZoomInActivity"></activity>
         <activity
             android:name=".src.splash.SplashActivity"
             android:exported="true">
@@ -53,9 +49,8 @@
             android:name=".ar.codelabs.hellogeospatial.HelloGeoActivity"
             android:configChanges="orientation|screenSize"
             android:exported="true"
-            android:theme="@style/Theme.AppCompat.NoActionBar"
-            android:screenOrientation="locked"/>
-
+            android:screenOrientation="locked"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -69,20 +64,14 @@
 
         <meta-data
             android:name="com.naver.maps.map.CLIENT_ID"
-            android:value="lvar9elarn" />
-
-        <!-- Indicates whether "Google Play Services for AR" (ARCore) is "required" or "optional". -->
-        <!--        <meta-data android:name="com.google.ar.core" android:value="required" />-->
-
+            android:value="lvar9elarn" /> <!-- Indicates whether "Google Play Services for AR" (ARCore) is "required" or "optional". -->
+        <!-- <meta-data android:name="com.google.ar.core" android:value="required" /> -->
         <meta-data
             android:name="com.google.android.ar.API_KEY"
-            android:value="AIzaSyDy0JWsp_mx5ePQJ1ziGrDUDWtWvuqaHqo"/>
-
+            android:value="AIzaSyDy0JWsp_mx5ePQJ1ziGrDUDWtWvuqaHqo" />
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyDy0JWsp_mx5ePQJ1ziGrDUDWtWvuqaHqo" />
-
-
     </application>
 
 </manifest>
