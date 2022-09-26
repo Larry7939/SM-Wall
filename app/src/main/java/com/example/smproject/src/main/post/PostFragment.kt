@@ -56,7 +56,6 @@ class PostFragment : BaseFragment<FragmentPostBinding>(FragmentPostBinding::bind
     //칩의 개수 카운트
     private var chipNum:Int =0
 
-
     fun newInstance(): Fragment {
         return PostFragment()
     }
@@ -88,6 +87,7 @@ class PostFragment : BaseFragment<FragmentPostBinding>(FragmentPostBinding::bind
         binding.postFinish.setOnClickListener {
             postPosting() //포스팅
         }
+        imgCancel() // 이미지 업로드 취소
    }
     private fun setPostedImage(context: Context){
         //launcher선언(앨범 열기용)
@@ -102,6 +102,7 @@ class PostFragment : BaseFragment<FragmentPostBinding>(FragmentPostBinding::bind
                 //iv1이 차있고 iv2도 차있으면 toast 메시지
                 //iv1이 차있고 iv2가 비어있으면 iv2에 이미지 set
                 if(binding.postPostedIv1.drawable==null){
+                    binding.postPostedCancel1.visibility = View.VISIBLE
                     Glide.with(context)
                         .load(uri)
                         .into(binding.postPostedIv1)
@@ -123,6 +124,7 @@ class PostFragment : BaseFragment<FragmentPostBinding>(FragmentPostBinding::bind
                         showCustomToast("사진은 최대 2장까지만 첨부할 수 있습니다.")
                     }
                     else {
+                        binding.postPostedCancel2.visibility = View.VISIBLE
                         Glide.with(context)
                             .load(uri)
                             .into(binding.postPostedIv2)
@@ -148,6 +150,40 @@ class PostFragment : BaseFragment<FragmentPostBinding>(FragmentPostBinding::bind
             intent.type = "image/*"
             intent.action = Intent.ACTION_GET_CONTENT
             launcher.launch(intent)
+        }
+    }
+
+    private fun imgCancel(){
+        binding.postPostedCancel1.setOnClickListener {
+            //사진 1개 & 첫번째 취소버튼
+            if(postImages.size==1){
+                postImages.removeAt(0)
+                binding.postPostedIv1.setImageDrawable(null)
+                binding.postPostedCancel1.visibility = View.GONE
+                binding.postPostedCancel2.visibility = View.GONE
+            }
+            //사진 2개 & 첫번째 취소버튼
+            else if(postImages.size==2){
+                postImages.removeAt(0)
+                binding.postPostedIv1.setImageDrawable(binding.postPostedIv2.drawable)
+                binding.postPostedIv2.setImageDrawable(null)
+                binding.postPostedCancel1.visibility = View.VISIBLE
+                binding.postPostedCancel2.visibility = View.GONE
+            }
+            for(i in postImages){
+                showCustomToast("포스팅 이미지 ${i}")
+            }
+        }
+        binding.postPostedCancel2.setOnClickListener {
+            if(postImages.size==2){
+                postImages.removeAt(1)
+                binding.postPostedIv2.setImageDrawable(null)
+                binding.postPostedCancel1.visibility = View.VISIBLE
+                binding.postPostedCancel2.visibility = View.GONE
+            }
+            for(i in postImages){
+                showCustomToast("포스팅 이미지 ${i}")
+            }
         }
     }
 
@@ -185,10 +221,6 @@ class PostFragment : BaseFragment<FragmentPostBinding>(FragmentPostBinding::bind
         m.setRotate(degrees, bitmap.width.toFloat() / 2, bitmap.height.toFloat() / 2)
         return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, m, true)
     }
-
-
-
-
 
     private fun hashTag(){
         binding.postHashEt.addTextChangedListener(
@@ -251,6 +283,8 @@ class PostFragment : BaseFragment<FragmentPostBinding>(FragmentPostBinding::bind
 //        Log.d("Posted","이미지 추가 완료 ${postImages[0]}, ${postImages[1]}")
 
         PostPostingService(this).tryPostPosting(PostPostingRequest("createPost", contents, postImages, hashStringToPost, isPrivate, ApplicationClass.latitude.toString(),ApplicationClass.longtidute.toString()))
+        binding.postPostedCancel1.visibility = View.GONE
+        binding.postPostedCancel2.visibility = View.GONE
     }
 
     override fun onPostPostingSuccess(response: PostPostingResponse) {

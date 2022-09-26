@@ -124,15 +124,16 @@
         </androidx.appcompat.widget.AppCompatImageView>
     </androidx.cardview.widget.CardView>
     <androidx.appcompat.widget.AppCompatImageButton
-        android:id="@+id/post_posted_cancle1"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:src="@drawable/posting_cancle"
+        android:id="@+id/post_posted_cancel1"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:src="@drawable/posting_cancel2"
         app:layout_constraintTop_toTopOf="@id/post_posted_cv1"
         app:layout_constraintStart_toEndOf="@id/post_posted_cv1"
         android:layout_marginStart="-10dp"
         android:layout_marginTop="-10dp"
         android:background="@color/white"
+        android:visibility="gone"
         android:scaleType="fitXY">
     </androidx.appcompat.widget.AppCompatImageButton>
 
@@ -156,15 +157,17 @@
 
     </androidx.cardview.widget.CardView>
     <androidx.appcompat.widget.AppCompatImageButton
-        android:id="@+id/post_posted_cancle2"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:src="@drawable/posting_cancle"
+        android:id="@+id/post_posted_cancel2"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:src="@drawable/posting_cancel2"
         app:layout_constraintTop_toTopOf="@id/post_posted_cv2"
         app:layout_constraintStart_toEndOf="@id/post_posted_cv2"
         android:layout_marginStart="-10dp"
         android:layout_marginTop="-10dp"
         android:background="@color/white"
+        android:visibility="gone"
+
         android:scaleType="fitXY">
     </androidx.appcompat.widget.AppCompatImageButton>
 

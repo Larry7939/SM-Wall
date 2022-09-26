@@ -344,7 +344,6 @@ class HelloGeoRenderer(val activity: HelloGeoActivity, val tapHelper: TapHelper)
 
   fun touchObject(id: Int){
     activity.runOnUiThread {
-      Toast.makeText(activity, "${id}", Toast.LENGTH_SHORT).show()
       ApplicationClass.postedId = id.toString()
       postedDialog.create()
       postedDialog.show()
