@@ -16,6 +16,7 @@ class PermissionSupport(activity:Activity, context:Context) {     //생성자에
         android.Manifest.permission.ACCESS_COARSE_LOCATION,
         android.Manifest.permission.ACCESS_FINE_LOCATION,
         android.Manifest.permission.READ_EXTERNAL_STORAGE,
+        android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
         android.Manifest.permission.CAMERA)
     private lateinit var permissionList:ArrayList<String>
 

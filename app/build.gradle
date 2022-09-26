@@ -113,6 +113,8 @@ dependencies {
     implementation 'io.github.sceneview:arsceneview:0.9.0'
 
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
-
+    //이미지 회전
     implementation "androidx.exifinterface:exifinterface:1.1.0"
+    //카메라 실행 시 ApplicationProvider사용을 위함
+    androidTestImplementation 'androidx.test:core:1.2.0'
 }

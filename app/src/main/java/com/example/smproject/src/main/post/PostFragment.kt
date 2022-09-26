@@ -1,15 +1,20 @@
 package com.example.smproject.src.main.post
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
+import android.provider.MediaStore
 import android.text.Editable
+import android.text.TextUtils
 import android.text.TextWatcher
 import android.util.Log
 import android.view.View
@@ -19,10 +24,14 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.SwitchCompat
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.core.view.children
 import androidx.exifinterface.media.ExifInterface
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
+import com.example.smproject.BuildConfig
 import com.example.smproject.R
 import com.example.smproject.config.ApplicationClass
 import com.example.smproject.config.BaseFragment
@@ -32,7 +41,10 @@ import com.example.smproject.src.main.post.models.PostPostingResponse
 import com.example.smproject.util.BitmapConverter
 import com.example.smproject.util.CurrentLocation
 import com.google.android.material.chip.Chip
+import java.io.File
 import java.io.IOException
+import java.util.jar.Manifest
+import kotlin.collections.ArrayList
 
 
 class PostFragment : BaseFragment<FragmentPostBinding>(FragmentPostBinding::bind,R.layout.fragment_post),PostFragmentPostingView {
@@ -55,6 +67,10 @@ class PostFragment : BaseFragment<FragmentPostBinding>(FragmentPostBinding::bind
     private var contents:String = ""
     //칩의 개수 카운트
     private var chipNum:Int =0
+    //camera 코드
+    private val REQ_CAMERA = 100
+
+    private lateinit var cameraImagePath :String
 
     fun newInstance(): Fragment {
         return PostFragment()
@@ -65,7 +81,6 @@ class PostFragment : BaseFragment<FragmentPostBinding>(FragmentPostBinding::bind
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         swShare = binding.postSwitch
         tvShare = binding.postSwitchTv
 
@@ -146,10 +161,120 @@ class PostFragment : BaseFragment<FragmentPostBinding>(FragmentPostBinding::bind
         }
         // 이미지 추가 버튼 눌렀을 때 갤러리 실행
         binding.postAddImg.setOnClickListener { v ->
-            val intent = Intent()
+            val intent = Intent(Intent.ACTION_PICK)
+            intent.type = MediaStore.Images.Media.CONTENT_TYPE
             intent.type = "image/*"
             intent.action = Intent.ACTION_GET_CONTENT
             launcher.launch(intent)
+        }
+        binding.postAddCamera.setOnClickListener {
+            showCamera()
+        }
+//        binding.postAddCamera.setOnClickListener {
+//            val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+//            if (intent.resolveActivity(context.packageManager) != null) {
+//                var imageFile: File? = null
+//                try {
+//                    imageFile = createImageFile()
+//                } catch (e: IOException) {
+//                    e.printStackTrace()
+//                }
+//                if (imageFile != null) {
+//                    val imageUri = FileProvider.getUriForFile(
+//                        context.applicationContext,
+//                        //일단 아래 코드를 위 줄로 대체
+////                        ApplicationProvider.getApplicationContext<Context>(),
+//                        "com.example.getimage.fileprovider",
+//                        imageFile
+//                    )
+//                    intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
+//                    startActivityForResult(intent, CAMERA) // final int CAMERA = 100;
+//                }
+//            }
+//        }
+
+    }
+//
+//    @SuppressLint("SimpleDateFormat")
+//    @Throws(IOException::class)
+//    fun createImageFile(): File? {
+//    //	이미지 파일 생성
+//    	val imageDate = SimpleDateFormat("yyyyMMdd_HHmmss");
+//        val timeStamp: String =
+//            imageDate.format(Date()) // 파일명 중복을 피하기 위한 "yyyyMMdd_HHmmss"꼴의 timeStamp
+//        val fileName = "IMAGE_$timeStamp" // 이미지 파일 명
+//
+//        val storageDir: File = context?.getExternalFilesDir(Environment.DIRECTORY_PICTURES).absolutePath()
+//
+//        val file = File.createTempFile(fileName, ".jpg", storageDir) // 이미지 파일 생성
+//        imagePath = file.absolutePath // 파일 절대경로 저장하기, String
+//        return file
+//    }
+
+
+    private fun createImageFile(): File { // 사진이 저장될 폴더 있는지 체크
+
+        var imageName = "plantdiary_${System.currentTimeMillis()}"
+
+        var file: File? = context?.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+
+        return File.createTempFile(imageName,".jpg", file).apply {
+            cameraImagePath = absolutePath
+        }
+    }
+    private fun showCamera() {
+
+        var state = Environment.getExternalStorageState()
+        if (TextUtils.equals(state, Environment.MEDIA_MOUNTED)) {
+            var intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+            context?.let {
+                intent.resolveActivity(it.packageManager)?.let {
+                    createImageFile().let {
+                        var photoUri = context?.let { it1 ->
+                            FileProvider.getUriForFile(
+                                it1,
+                                BuildConfig.APPLICATION_ID + ".provider",
+                                it
+                            )
+                        }
+                        intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
+                        startActivityForResult(intent, REQ_CAMERA)
+                    }
+                }
+            }
+        }
+
+    }
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        var bitmap:Bitmap? = null
+        if (resultCode == Activity.RESULT_OK) {
+            when (requestCode) {
+                REQ_CAMERA -> {
+                    val options:BitmapFactory.Options = BitmapFactory.Options()
+                    options.inSampleSize = 2 //이미지 축소 정도. 원 크기에서 1/inSampleSize로 축소됨
+                    bitmap = BitmapFactory.decodeFile(cameraImagePath,options)
+                    postImages.add("data:image/png;base64,${bitmapConverter.bitmapToBase64(bitmap)}")
+
+                    if(binding.postPostedIv1.drawable==null){
+                        binding.postPostedIv1.setImageBitmap(bitmap)
+                        binding.postPostedCancel1.visibility = View.VISIBLE
+                        binding.postPostedCancel2.visibility = View.GONE
+                    }
+                    else if(binding.postPostedIv1.drawable!=null){
+                        if(binding.postPostedIv2.drawable!=null){
+                            showCustomToast("사진은 최대 2장까지만 첨부할 수 있습니다.")
+                        }
+                        //
+                        else{
+                            binding.postPostedIv2.setImageBitmap(bitmap)
+                            binding.postPostedCancel1.visibility = View.VISIBLE
+                            binding.postPostedCancel2.visibility = View.VISIBLE
+                        }
+                    }
+
+                }
+            }
         }
     }
 
