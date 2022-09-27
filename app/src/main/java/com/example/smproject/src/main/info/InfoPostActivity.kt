@@ -68,6 +68,9 @@ class InfoPostActivity:AppCompatActivity(), GetPostListView, PostedView{
         adapter.dataList=postLists
         binding.recyclerView.adapter=adapter
         binding.recyclerView.layoutManager=LinearLayoutManager(this)
+        binding.postManageBackBtn.setOnClickListener {
+            onBackPressed()
+        }
     }
 
     override fun onPostedFailure(message: String) {

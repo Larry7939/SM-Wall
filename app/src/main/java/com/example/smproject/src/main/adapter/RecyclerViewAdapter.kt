@@ -18,9 +18,10 @@ import com.example.smproject.src.main.getPostApi.models.GetPostListResonse
 import com.example.smproject.src.main.posted.PostedView
 import com.example.smproject.src.main.posted.models.Info
 import com.example.smproject.src.main.posted.models.PostedResponse
+import kotlinx.coroutines.NonDisposableHandle.parent
 import org.w3c.dom.Text
 
-class RecyclerViewAdapter
+class RecyclerViewAdapter()
     : RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder>(){
     var dataList = mutableListOf<Info>()
 
@@ -28,7 +29,8 @@ class RecyclerViewAdapter
 
 
         fun bind(postedResponse: Info) {
-            binding.postHashTag.text = postedResponse.hashtag
+            Glide.with(this.itemView).asBitmap().load(postedResponse.imageUrlList?.get(0))
+                .into(binding.postPostedImg)
             binding.postContent.text = postedResponse.content
 
         }
