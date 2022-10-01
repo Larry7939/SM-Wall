@@ -12,6 +12,10 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> <!-- 카메라 사용 권한 -->
     <uses-permission android:name="android.permission.CAMERA" /> <!-- Sceneform requires OpenGL ES 3.0 or later. 이 앱에 필요한 하드웨어 기능을 지정하는 uses features - OpenGL ES버전 3.0이상/ARCore지원기기 -->
+
+    <!-- s3 업로드-->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <uses-feature
         android:glEsVersion="0x00030000"
         android:required="true" /> <!-- Indicates that app requires ARCore ("AR Required"). Ensures the app is visible only in the Google Play Store on devices that support ARCore. For "AR Optional" apps remove this line. -->
@@ -29,7 +33,9 @@
         android:label="SM-WALL"
         android:roundIcon="@mipmap/ic_launcher_foreground"
         android:supportsRtl="true"
-        android:theme="@style/Theme.SmProject">
+        android:theme="@style/Theme.SmProject"
+        android:requestLegacyExternalStorage="true"
+        >
         <activity android:name=".util.ImageZoomInActivity"></activity>
         <activity
             android:name=".src.splash.SplashActivity"
@@ -90,6 +96,7 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyDy0JWsp_mx5ePQJ1ziGrDUDWtWvuqaHqo" />
+        <service android:name="com.amazonaws.mobileconnectors.s3.transferutility.TransferService" android:enabled="true" />
     </application>
 
 </manifest>

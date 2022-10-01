@@ -117,4 +117,11 @@ dependencies {
     implementation "androidx.exifinterface:exifinterface:1.1.0"
     //카메라 실행 시 ApplicationProvider사용을 위함
     androidTestImplementation 'androidx.test:core:1.2.0'
+
+    //aws s3 image
+    implementation 'com.amazonaws:aws-android-sdk-mobile-client:2.13.5'
+    implementation 'com.amazonaws:aws-android-sdk-cognito:2.13.5'
+    implementation 'com.amazonaws:aws-android-sdk-s3:2.13.5'
+
+
 }

@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
@@ -12,6 +13,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
+import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextUtils
@@ -30,6 +32,13 @@ import androidx.core.content.FileProvider
 import androidx.core.view.children
 import androidx.exifinterface.media.ExifInterface
 import androidx.fragment.app.Fragment
+import com.amazonaws.auth.AWSCredentials
+import com.amazonaws.auth.BasicAWSCredentials
+import com.amazonaws.mobileconnectors.s3.transferutility.*
+import com.amazonaws.regions.Region
+import com.amazonaws.regions.Regions
+import com.amazonaws.services.s3.AmazonS3Client
+import com.amazonaws.services.s3.internal.Constants
 import com.bumptech.glide.Glide
 import com.example.smproject.BuildConfig
 import com.example.smproject.R
@@ -41,9 +50,11 @@ import com.example.smproject.src.main.post.models.PostPostingResponse
 import com.example.smproject.util.BitmapConverter
 import com.example.smproject.util.CurrentLocation
 import com.google.android.material.chip.Chip
+import com.google.ar.core.TrackingState
 import java.io.File
 import java.io.IOException
 import java.util.jar.Manifest
+import javax.crypto.SecretKey
 import kotlin.collections.ArrayList
 
 
@@ -104,6 +115,7 @@ class PostFragment : BaseFragment<FragmentPostBinding>(FragmentPostBinding::bind
         }
         imgCancel() // 이미지 업로드 취소
    }
+    @SuppressLint("Range")
     private fun setPostedImage(context: Context){
         //launcher선언(앨범 열기용)
         launcher = registerForActivityResult(
@@ -122,17 +134,66 @@ class PostFragment : BaseFragment<FragmentPostBinding>(FragmentPostBinding::bind
                         .load(uri)
                         .into(binding.postPostedIv1)
                     //Uri -> Bitmap -> Base64인코딩
+                    // 임시 주석 처리 (by 다인)
+//                    if (uri != null) {
+//                        // 사진 가져오기
+//                        val bitmap = BitmapFactory.decodeStream(context.contentResolver.openInputStream(uri))
+//                        // 사진의 회전 정보 가져오기
+//                        val orientation = getOrientationOfImage(uri).toFloat()
+//                        // 이미지 회전하기
+//                        val newBitmap = getRotatedBitmap(bitmap, orientation)
+////                        // 회전된 이미지로 imaView 설정
+////                        binding.postPostedIv1.setImageBitmap(newBitmap)
+//                        postImages.add("data:image/png;base64,${bitmapConverter.bitmapToBase64(newBitmap)}")
+//                    }
+
+                    // aws s3 image upload (by 다인)
                     if (uri != null) {
-                        // 사진 가져오기
-                        val bitmap = BitmapFactory.decodeStream(context.contentResolver.openInputStream(uri))
-                        // 사진의 회전 정보 가져오기
-                        val orientation = getOrientationOfImage(uri).toFloat()
-                        // 이미지 회전하기
-                        val newBitmap = getRotatedBitmap(bitmap, orientation)
-//                        // 회전된 이미지로 imaView 설정
-//                        binding.postPostedIv1.setImageBitmap(newBitmap)
-                        postImages.add("data:image/png;base64,${bitmapConverter.bitmapToBase64(newBitmap)}")
+
+                        // accesskey, secretkey는 깃허브에 올리면 안되서 따로 파일로 빼서 관리 부탁드립니다.
+                        val ACCESS_KEY = ""
+                        val SECRET_KEY = ""
+                        val awsCredentials: AWSCredentials = BasicAWSCredentials(ACCESS_KEY, SECRET_KEY);
+
+                        // aws s3 리전은 서울(AP_NORTHEAST_2)입니다.
+                        val s3Client: AmazonS3Client = AmazonS3Client(awsCredentials, Region.getRegion(Regions.AP_NORTHEAST_2))
+
+                        val transferUtility: TransferUtility = TransferUtility.builder().s3Client(s3Client).context(activity?.applicationContext).build()
+                        TransferNetworkLossHandler.getInstance(activity?.applicationContext)
+
+                        // getFilePathFromUri는 uri -> real path로 변환하는 함수로 아래 작성되어 있습니다.
+                        val path = getFilePathFromUri(context, uri)
+                        val file = File(path)
+
+                        // 버킷명: smwall
+                        // 파일이름: 파일이름의 경우 고유해야 해서 현재 시간을 TimeStamp로 변경한 뒤 확장자를 붙여서 사용합니다.
+                        val pathArr = path?.split(".")
+                        val type = pathArr?.get(pathArr?.size-1) // 확장자
+                        val filename = System.currentTimeMillis().toString() + "." + type
+                        val uploadObserver: TransferObserver = transferUtility.upload("smwall", filename, file) // 파일 업로드
+
+                        uploadObserver.setTransferListener(object : TransferListener {
+                            override fun onStateChanged(id: Int, state: TransferState?) {
+                                if(state == TransferState.COMPLETED) {
+                                    // 이미지 업로드 성공한 경우!!
+                                    // createPost하는 api의 imageList에 base64대신 위에서 만들어 놓은 filename을 넣어서 보내주시면 됩니다.
+                                    showCustomToast("UPLOAD_SUCCESS_STATE_CHANGED")
+                                }
+                            }
+                            override fun onProgressChanged(id: Int, bytesCurrent: Long, bytesTotal: Long) {
+                                showCustomToast("UPLOAD_SUCCESS_ON_PROGRESS_CHANGED")
+
+                            }
+
+
+                            override fun onError(id: Int, ex: java.lang.Exception?) {
+                                Log.d("error", ex.toString())
+                                showCustomToast("ERROR")
+
+                            }
+                        })
                     }
+                    //
                 }
                 else if(binding.postPostedIv1.drawable!=null){
                     if(binding.postPostedIv2.drawable!=null){
@@ -211,6 +272,69 @@ class PostFragment : BaseFragment<FragmentPostBinding>(FragmentPostBinding::bind
 //        return file
 //    }
 
+    // uri -> real path 로 변환하는 함수 (by 다인)
+    private fun getFilePathFromUri(context: Context, uri: Uri?): String? {
+        uri ?: return null
+        uri.path ?: return null
+
+        var newUriString = uri.toString()
+        newUriString = newUriString.replace(
+            "content://com.android.providers.downloads.documents/",
+            "content://com.android.providers.media.documents/"
+        )
+        newUriString = newUriString.replace(
+            "/msf%3A", "/image%3A"
+        )
+        val newUri = Uri.parse(newUriString)
+
+        var realPath = String()
+        val databaseUri: Uri
+        val selection: String?
+        val selectionArgs: Array<String>?
+        if (newUri.path?.contains("/document/image:")  == true) {
+            databaseUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+            selection = "_id=?"
+            selectionArgs = arrayOf(DocumentsContract.getDocumentId(newUri).split(":")[1])
+        } else {
+            databaseUri = newUri
+            selection = null
+            selectionArgs = null
+        }
+        try {
+            val column = "_data"
+            val projection = arrayOf(column)
+            val cursor = context.contentResolver.query(
+                databaseUri,
+                projection,
+                selection,
+                selectionArgs,
+                null
+            )
+            cursor?.let {
+                if (it.moveToFirst()) {
+                    val columnIndex = cursor.getColumnIndexOrThrow(column)
+                    realPath = cursor.getString(columnIndex)
+                }
+                cursor.close()
+            }
+        } catch (e: Exception) {
+            Log.i("GetFileUri Exception:", e.message ?: "")
+        }
+        val path = realPath.ifEmpty {
+            when {
+                newUri.path?.contains("/document/raw:") == true -> newUri.path?.replace(
+                    "/document/raw:",
+                    ""
+                )
+                newUri.path?.contains("/document/primary:") == true -> newUri.path?.replace(
+                    "/document/primary:",
+                    "/storage/emulated/0/"
+                )
+                else -> return null
+            }
+        }
+        return if (path.isNullOrEmpty()) null else path
+    }
 
     private fun createImageFile(): File { // 사진이 저장될 폴더 있는지 체크
 
