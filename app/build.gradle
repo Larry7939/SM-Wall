@@ -2,6 +2,10 @@ plugins {
     id 'com.android.application'
     id 'kotlin-android'
 }
+// 선언 및 키값을 불러옴
+
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
 
 android {
     compileSdkVersion 31
@@ -18,6 +22,15 @@ android {
 
         resValue "string", "google_maps_key", (project.findProperty("GOOGLE_MAPS_API_KEY") ?: "")
 
+        buildConfigField "String", "S3_ACCESS_KEY", properties['s3_access_key']
+        buildConfigField "String", "S3_SECRET_KEY", properties['s3_secret_key']
+        // 프로젝트 내에서 언제든지 사용이 가능한 변수들이다.
+        // 타입 - 키 - 값으로 저장된다.
+//
+//        manifestPlaceholders = [S3_ACCESS_KEY: s3_access_key]
+//        manifestPlaceholders = [S3_SECRET_KEY: s3_secret_key]
+        // 매니페스트에서 사용이 가능하다. 구글맵 같은 경우가 이에 해당한다.
+        // 키 - 값으로 저장된다.
     }
 
     buildTypes {
